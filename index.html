@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="shortcut icon" href="Estilo/Imagens/dashboard_favi.png" type="image/x-icon"> <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="Estilo/css/main-style.css" /> <title>Dashboard - Controle de Estoque</title>
+</head>
+
+<body>
+    <section id="topo">
+        <div id="botoes_paginas">
+            <button style="background-color: #03A64A;"><img src="Estilo/Imagens/dashboard_icone.png"> <p> Dashboard</p>
+            </button>
+            <a href="Corpo/produtos.html"><button><img src="Estilo/Imagens/produtos_icone.png">
+                    <p> Produtos</p>
+                </button></a>
+            <a href="Corpo/categorias.html"><button><img src="Estilo/Imagens/categorias_icone.png">
+                    <p> Categorias</p>
+                </button></a>
+            <a href="Corpo/relatorios.html"><button><img src="Estilo/Imagens/relatorios_icone.png">
+                    <p> Relatórios</p>
+                </button></a>
+        </div>
+    </section>
+
+    <section id="main">
+        <div class="main-header">
+            <h1>Painel de Controle</h1>
+            <p>Visão geral do seu sistema de estoque.</p>
+        </div>
+
+        <div id="dashboard-cards">
+            <div class="card">
+                <h2>Total de Produtos</h2>
+                <p id="total-produtos" class="card-dado">Carregando...</p>
+            </div>
+            <div class="card">
+                <h2>Produtos com Estoque Baixo</h2>
+                <p id="estoque-baixo" class="card-dado">Carregando...</p>
+            </div>
+            <div class="card">
+                <h2>Total de Categorias Ativas</h2>
+                <p id="total-categorias" class="card-dado">Carregando...</p>
+            </div>
+        </div>
+
+        <div id="recentes-container">
+            <h2>Movimentações Recentes</h2>
+            <table id="tabela-recentes">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-tabela-recentes">
+                    <tr>
+                        <td colspan="4">Carregando movimentações...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <script type="text/javascript" src="Estilo/Script/dashboard.js"></script>
+</body>
+
+</html>

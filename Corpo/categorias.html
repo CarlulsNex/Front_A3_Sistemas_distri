@@ -7,198 +7,173 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="shortcut icon" href="Estilo/Imagens/categorias_favi.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../Estilo/Imagens/categorias_favi.png" type="image/x-icon">
     <link
         href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="Estilo/css/categorias_estilo.css" />
-    <title>Categoria</title>
+    <link rel="stylesheet" type="text/css" href="../Estilo/css/main-style.css" />
+    <title>Categorias</title>
 </head>
 
 <body>
     <section id="topo">
         <div id="botoes_paginas">
-            <a href="{{ url_for('produtos.produtos') }}"><button><img src="Estilo/Imagens/produtos_icone.png">
-                    <p> Produtos</p>
-                </button></a>
-            <button style="background-color: #03A64A;"><img src="Estilo/Imagens/categorias_icone.png">
-                <p> Categorias</p>
-            </button>
-            <a href="{{ url_for('relatorio.relatorios') }}"><button><img src="Estilo/Imagens/relatorios_icone.png">
-                    <p> Relatórios</p>
-                </button></a>
-        </div>
-        <div id="botoes_crud">
+            <a href="../index.html">
+        <button>
+            <img src="../Estilo/Imagens/dashboard_icone.png">
+            <p> Dashboard</p>
+        </button>
+    </a>
+
+    <a href="produtos.html">
+        <button>
+            <img src="../Estilo/Imagens/produtos_icone.png">
+            <p> Produtos</p>
+        </button>
+    </a>
+
+    <a href="categorias.html">
+        <button id="botao-ativo">
+            <img src="../Estilo/Imagens/categorias_icone.png">
+            <p> Categorias</p>
+        </button>
+    </a>
+    
+    <a href="relatorios.html">
+        <button>
+            <img src="../Estilo/Imagens/relatorios_icone.png">
+            <p> Relatórios</p>
+        </button>
+    </a>
+    </div>
+            <div id="botoes_crud">
             <ul>
                 <li><input type="button" id="add_categoria" value="Nova Categoria"></li>
-                <li><input type="button" id="editar_categoria" value="Editar Categoria"></li>
+                <li><input type="button" id="editar_categoriaB" value="Editar Categoria"></li>
                 <li><input type="button" id="inativar_categoria" value="Alterar Status"></li>
             </ul>
         </div>
     </section>
+
     <section id="main">
         <div id="cabecalho">
             <div class="pesquisa">
-                <p>id </p>
+                <p>ID</p>
                 <input type="text" id="pesquisaCategoriaID" />
             </div>
             <div class="pesquisa">
-                <p>Categoria </p>
+                <p>Categoria</p>
                 <input type="text" id="pesquisaNome" />
             </div>
             <div class="pesquisa">
-                <p>Status </p>
+                <p>Status</p>
                 <input type="text" id="pesquisaStatus" />
             </div>
         </div>
-        <div id="no-results-message"
-            style="display: none; text-align: center; color: red; position: relative; margin-top: 100px;">
-            <p>Nenhum produto encontrado!</p>
+        <div id="no-results-message" style="display: none; text-align: center; color: red; margin-top: 100px;">
+            <p>Nenhuma categoria encontrada!</p>
         </div>
         <div id="tabela">
             <table id="tabela-categorias">
-                <tbody>
-                    {% if categorias %}
-                    {% for categoria_item in categorias %}
-                    <tr id="tabela_categorias_itens" data-id="{{ categoria_item.categoriaid }}">
-                        <td>
-                            <p>{{ categoria_item.categoriaid }}</p>
-                        </td>
-                        <td>
-                            <p>{{categoria_item.nome}}</p>
-                        </td>
-                        <td>
-                            <p>{{ categoria_item.status }}</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% else %}
+                 <thead>
                     <tr>
-                        <td colspan="3">Nenhum registro encontrado</td>
+                        <th style="width: 10%;">ID</th>
+                        <th style="width: 60%;">Nome</th>
+                        <th style="width: 30%;">Status</th>
                     </tr>
-                    {% endif %}
+                </thead>
+                <tbody id="corpo-tabela-categorias">
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Carregando categorias...</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </section>
 
-    <!-- Modal de Adição -->
     <div id="adicionar_categoria" class="modal">
         <div class="modal-conteudo">
-            <h2>Nova categoria</h2>
-            <form id="Form-adiciona-categoria" method="POST" action="{{ url_for('categorias.add_categoria') }}">
+            <h2>Nova Categoria</h2>
+            <form id="Form-adiciona-categoria">
                 <div class="infos">
                     <div class="infos-1">
                         <div class="novos-dados">
-                            <label for="nome">Nome:</label><br />
-                            <input type="text" id="nome" name="nome"><br><br>
+                            <label for="Modal_editar_nome">Nome:</label><br />
+                            <input type="text" id="Modal_editar_nome" class="editar-nome" required><br><br>
                         </div>
                         <div class="novos-dados">
-                            <label for="status">Status:</label><br />
-                            <select name="status" id="status">
-                                <option value="Ativo" selected="selected"> Ativo </option>
-                                <option value="Inativo"> Inativo </option>
+                            <label for="Modal_editar_status">Status:</label><br />
+                            <select class="editar-status" id="Modal_editar_status">
+                                <option value="ATIVO" selected="selected">Ativo</option>
+                                <option value="INATIVO">Inativo</option>
                             </select>
                         </div>
                     </div>
                 </div>
                 <div class="botoes-decisao-box">
-                    <input type="hidden" name="DecisaoAdicionar" value="cancelar" id="acaoAdicionar">
-                    <input type="submit" class="btn-decisao btn-cancelar" value="Cancelar"
-                        onclick="document.getElementById('acaoAdicionar').value='cancelar';">
-                    <input type="submit" class="btn-decisao btn-confirmar" value="Confirmar"
-                        onclick="document.getElementById('acaoAdicionar').value='confirmar';">
+                    <button type="button" class="btn-decisao btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn-decisao btn-confirmar">Confirmar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal de Edição -->
-    <div id="editar-categoria" class="modal">
+    <div id="editar_categoria" class="modal">
         <div class="modal-conteudo">
             <h2>Editar Categoria</h2>
-            <form id="Form-editar-categoria" method="POST" action="{{ url_for('categorias.editar_categoria') }}">
+            <form id="Form-editar-categoria">
                 <div class="infos">
-                    <input type="hidden" id="editar-categoriaid" name="editar-categoriaid">
+                    <input type="hidden" id="categoriaid" name="categoriaid">
                     <div class="infos-1">
                         <div class="novos-dados">
                             <label for="editar-nome">Nome:</label><br />
-                            <input type="text" id="editar-nome" name="editar-nome"><br><br>
+                            <input type="text" id="editar-nome" class="editar-nome" required><br><br>
                         </div>
                         <div class="novos-dados">
                             <label for="editar-status">Status:</label><br />
-                            <select name="editar-status" id="editar-status">
-                                <option value="Ativo" selected="selected"> Ativo </option>
-                                <option value="Inativo"> Inativo </option>
+                            <select class="editar-status" id="editar-status">
+                                <option value="ATIVO">Ativo</option>
+                                <option value="INATIVO">Inativo</option>
                             </select>
                         </div>
                     </div>
                 </div>
                 <div class="botoes-decisao-box">
-                    <input type="hidden" name="DecisaoEditar" value="cancelar" id="acaoEditar">
-                    <input type="submit" class="btn-decisao btn-cancelar" value="Cancelar"
-                        onclick="document.getElementById('acaoEditar').value='cancelar';">
-                    <input type="submit" class="btn-decisao btn-confirmar" value="Confirmar"
-                        onclick="document.getElementById('acaoEditar').value='confirmar';">
+                    <button type="button" class="btn-decisao btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn-decisao btn-confirmar">Confirmar</button>
                 </div>
             </form>
         </div>
     </div>
-
-    <!-- Modal de alteração de status -->
+    
     <div id="alterar_Status" class="modal">
         <div class="modal-conteudo" id="modal-conteudo_alterar_Status">
-            <h2>Movimentação de Categoria</h2>
-            <form id="Form-alterar_Status" method="POST"
-                action="{{ url_for('categorias.alterar_StatusCategoria') }}">
+            <h2>Alterar Status da Categoria</h2>
+            <form id="Form-alterar_Status">
+                 <input type="hidden" id="categoriaid">
+                 <input type="hidden" id="alterar_status_novo_status">
                 <div class="infos">
-                    <input type="hidden" id="alterar_Status_selecionado"
-                        name="alterar_Status_selecionado">
                     <div class="infos-1">
-                        <p>Deseja tornar o categoria <span id="nomeCategoria"></span> <span id="statusNovo"></span>?
-                        </p>
+                        <p>Deseja alterar o status da categoria <b id="nomeCategoria"></b> para <b id="statusNovo"></b>?</p>
                     </div>
                 </div>
                 <div class="botoes-decisao-box">
-                    <input type="hidden" name="DecisaoAlterar" value="cancelar" id="acaoAlterar">
-                    <input type="submit" class="btn-decisao btn-cancelar" value="Cancelar"
-                        onclick="document.getElementById('acaoAlterar').value='cancelar';">
-                    <input type="submit" class="btn-decisao btn-confirmar" value="Confirmar"
-                        onclick="document.getElementById('acaoAlterar').value='confirmar';">
+                    <button type="button" class="btn-decisao btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn-decisao btn-confirmar">Confirmar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal de mensagem de retorno sobre a operação -->
+
     <div id="mensagem_resultado" class="modal">
         <div id="mensagem_resultado_conteudo">
-            {% if mensagem_sucesso %}
-            <div class="mensagem" id="resultado_ok">
-                <p>{{ mensagem_sucesso }}</p>
-            </div>
-            {% endif %}
-            {% if mensagem_erro %}
-            <div class="mensagem" id="resultado_erro">
-                <p>{{ mensagem_erro }}</p>
-            </div>
-            {% endif %}
-            {% if mensagem_erro_quantia %}
-            <div class="mensagem" id="quantidade_negativa">
-                <p>{{ mensagem_erro_quantia }}</p>
-            </div>
-            {% endif %}
-            {% if mensagem_alerta %}
-            <div class="mensagem" id="campos_Npreenchidos">
-                <p>{{ mensagem_alerta }}</p>
-            </div>
-            {% endif %}
-            <div class="mensagem" id="nada_selecionado">
-                <p>Nenhum produto selecionado</p>
-            </div>
+            <div class="mensagem" id="resultado_ok"><p></p></div>
+            <div class="mensagem" id="resultado_erro"><p></p></div>
+            <div class="mensagem" id="alerta"><p></p></div>
         </div>
     </div>
-    <script type="text/javascript" src="Estilo/Script/categorias.js"></script>
-</body>
 
+    <script type="text/javascript" src="../Estilo/Script/categorias.js"></script>
+</body>
 </html>

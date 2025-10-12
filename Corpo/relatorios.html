@@ -11,97 +11,101 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="Estilo/css/relatorios_estilo.css" />
+    <link rel="stylesheet" type="text/css" href="../Estilo/css/main-style.css" />
     <title>Relatórios</title>
 </head>
 
 <body>
     <section id="topo">
         <div id="botoes_paginas">
-            <a href="{{ url_for('produtos.produtos') }}"><button><img src="Estilo/Imagens/produtos_icone.png">
-                    <p> Produtos</p>
-                </button></a>
-            <a href="{{ url_for('categorias.categorias') }}"><button><img src="Estilo/Imagens/categorias_icone.png">
-                    <p> Categorias</p>
-                </button></a>
-            <button style="background-color: #03A64A;"><img src="Estilo/Imagens/relatorios_icone.png">
-                <p> Relatórios</p>
-            </button>
-        </div>
+            <a href="../index.html">
+        <button>
+            <img src="../Estilo/Imagens/dashboard_icone.png">
+            <p> Dashboard</p>
+        </button>
+    </a>
+
+    <a href="produtos.html">
+        <button>
+            <img src="../Estilo/Imagens/produtos_icone.png">
+            <p> Produtos</p>
+        </button>
+    </a>
+
+    <a href="categorias.html">
+        <button>
+            <img src="../Estilo/Imagens/categorias_icone.png">
+            <p> Categorias</p>
+        </button>
+    </a>
+    
+    <a href="relatorios.html">
+        <button id="botao-ativo">
+            <img src="../Estilo/Imagens/relatorios_icone.png">
+            <p> Relatórios</p>
+        </button>
+    </a>
+    </div>
     </section>
     <section id="main">
-        <div id="filtro_pesquisa">
-            <div id="pesquisa_datas">
-                <div class='pesquisa_datas_inputs' id="pesquisa_DataInicial">
-                    <p><span>*</span>Data inicial:</p>
-                    <input type="date" />
+        <div id="filtros-container">
+            <h2>Filtros de Pesquisa</h2>
+            <div class="filtros-wrapper">
+                <div class="filtro-grupo" id="pesquisa_DataInicial">
+                    <label for="data-inicial"><span>*</span> Data inicial:</label>
+                    <input id="data-inicial" type="date" />
                 </div>
-                <div class='pesquisa_datas_inputs' id="pesquisa_DataFinal">
-                    <p><span>*</span>Data final:</p>
-                    <input type="date" />
+                <div class="filtro-grupo" id="pesquisa_DataFinal">
+                    <label for="data-final"><span>*</span> Data final:</label>
+                    <input id="data-final" type="date" />
                 </div>
-            </div>
-            <div id="pesquisa_seletores">
-                <div class="pesquisa_seletores_inputs" id="pesquisa_SeletorCategoria">
-                    <input type="text" placeholder="Selecionar categoria" />
+                <div class="filtro-grupo" id="pesquisa_SeletorCategoria">
+                    <label for="filtro-categoria">Categoria:</label>
+                    <input id="filtro-categoria" type="text" placeholder="Filtrar por categoria" />
                 </div>
-                <div class="pesquisa_seletores_inputs" id="pesquisa_SeletorProduto">
-                    <input type="text" placeholder="Selecionar produto" />
+                <div class="filtro-grupo" id="pesquisa_SeletorProduto">
+                    <label for="filtro-produto">Produto:</label>
+                    <input id="filtro-produto" type="text" placeholder="Filtrar por produto" />
                 </div>
-                <div class="pesquisa_seletores_inputs" id="pesquisa_SeletorID">
-                    <input type="text" placeholder="Inserir ID" />
+                <div class="filtro-grupo" id="pesquisa_SeletorID">
+                    <label for="filtro-id">ID do Produto:</label>
+                    <input id="filtro-id" type="text" placeholder="Filtrar por ID" />
                 </div>
-            </div>
-            <div id="pesquisa_RadioSaida">
-                <div class="pesquisa_RadioSaida_inputs" id="pesquisa_RadioMaiorSaida">
-                    <input type="radio" id="maior" name="ordenar" value="maior">
-                    <label for="maior">- Ordenar do maior para o menor</label><br>
-                </div>
-                <div class="pesquisa_RadioSaida_inputs" id="pesquisa_RadioMenorSaida">
-                    <input type="radio" id="menor" name="ordenar" value="menor">
-                    <label for="menor">- Ordenar do menor para o maior</label><br>
+                <div class="filtro-grupo">
+                    <label>Ordenar por Quantidade:</label>
+                    <div class="radio-group">
+                        <div id="pesquisa_RadioMaiorSaida">
+                            <input type="radio" id="maior" name="ordenar" value="maior">
+                            <label for="maior">Maior para o menor</label>
+                        </div>
+                        <div id="pesquisa_RadioMenorSaida">
+                            <input type="radio" id="menor" name="ordenar" value="menor">
+                            <label for="menor">Menor para o maior</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="tabela">
-            <div id="tabela_cabecalho">
-                <p>Tipo do movimento</p>
-                <p>Produto</p>
-                <p>Categoria</p>
-                <p>Quantidade</p>
-                <p>Data</P>
+
+            <div id="tabela-container">
+            <h2>Resultados</h2>
+            <div id="no-results-message" style="display: none;">
+                <p>Nenhum resultado encontrado para os filtros aplicados!</p>
             </div>
-            <div id="no-results-message" style="display: none; text-align: center; color: red; position: relative; margin-top: 100px;">
-                <p>Nenhum produto encontrado!</p>
-            </div>
-            <table id="tabela-categorias">
-                <tbody>
-                    {% if relatorio %}
-                    {% for relatorio_item in relatorio %}
-                    <tr id="tabela_relatorio_itens" data-id="{{ relatorio_item['entradaid'] if 'entradaid' in relatorio_item else relatorio_item['saidaid'] }}">
-                        <!-- Tipo do Movimento -->
-                        <td>
-                            <p>{{ 'Entrada' if 'entradaid' in relatorio_item else 'Saída' }}</p>
-                        </td>
-                        <!-- Produto -->
-                        <td>
-                            <p>{{ relatorio_item['produto_id'] }}</p>
-                        </td>
-                        <!-- Categoria -->
-                        <td>
-                            <p>{{ relatorio_item['categoria_idE'] if 'categoria_idE' in relatorio_item else relatorio_item['categoria_idS'] }}</p>
-                        </td>
-                        <!-- Quantidade -->
-                        <td>
-                            <p>{{ relatorio_item['quantidade'] }}</p>
-                        </td>
-                        <!-- Data -->
-                        <td>
-                            <p>{{ relatorio_item['data_entrada'].strftime('%d/%m/%Y') if 'data_entrada' in relatorio_item else relatorio_item['data_saida'].strftime('%d/%m/%Y') }}</p>
-                        </td>
+            <table id="tabela-relatorios">
+                <thead>
+                    <tr>
+                        <th>Tipo do Movimento</th>
+                        <th>Produto (ID)</th>
+                        <th>Categoria</th>
+                        <th>Quantidade</th>
+                        <th>Data</th>
                     </tr>
-                    {% endfor %}
-                    {% endif %}
+                </thead>
+                <tbody id="corpo-tabela-relatorios">
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Aguardando a seleção de datas para iniciar a busca...</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

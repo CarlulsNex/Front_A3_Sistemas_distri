@@ -11,32 +11,41 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="Estilo/css/produtos_estilo.css" />
+    <link rel="stylesheet" type="text/css" href="../Estilo/css/main-style.css" />
     <title>Produtos</title>
-    <link rel="stylesheet" href="Estilo/css/produtos_estilo.css"> 
 </head>
 
 <body>
     <section id="topo">
         <div id="botoes_paginas">
-            <button style="background-color: #03A64A;"><img src="Estilo/Imagens/produtos_icone.png">
-                <p> Produtos</p>
-            </button>
-            <a href="{{ url_for('categorias.categorias') }}"><button><img src="Estilo/Imagens/categorias_icone.png">
-                    <p> Categorias</p>
-                </button></a>
-            <a href="{{ url_for('relatorio.relatorios') }}"><button><img src="Estilo/Imagens/relatorios_icone.png">
-                    <p> Relatórios</p>
-                </button></a>
-        </div>
-        <div id="botoes_crud">
-            <ul>
-                <li><input type="button" id="add-produto" value="Novo Produto"></li>
-                <li><input type="button" id="editar-produto" value="Editar Produto"></li>
-                <li><input type="button" id="movimentar-produto" value="Movimentar Estoque"></li>
-                <li><input type="button" id="alterarStatus-produto" value="Alterar status"></li>
-            </ul>
-        </div>
+            <a href="../index.html">
+        <button>
+            <img src="../Estilo/Imagens/dashboard_icone.png">
+            <p> Dashboard</p>
+        </button>
+    </a>
+
+    <a href="produtos.html">
+        <button id="botao-ativo">
+            <img src="../Estilo/Imagens/produtos_icone.png">
+            <p> Produtos</p>
+        </button>
+    </a>
+
+    <a href="categorias.html">
+        <button>
+            <img src="../Estilo/Imagens/categorias_icone.png">
+            <p> Categorias</p>
+        </button>
+    </a>
+    
+    <a href="relatorios.html">
+        <button>
+            <img src="../Estilo/Imagens/relatorios_icone.png">
+            <p> Relatórios</p>
+        </button>
+    </a>
+    </div>
     </section>
     <section id="main">
         <div id="cabecalho">

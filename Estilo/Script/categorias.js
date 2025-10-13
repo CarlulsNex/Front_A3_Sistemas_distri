@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- CONFIGURAÇÕES E SELETORES GLOBAIS ---
-    const API_BASE_URL = 'http://127.0.0.1:5000/api'; // Mude se sua API estiver em outro endereço
+    const API_BASE_URL = 'http://127.0.0.1:5000/api';
 
     // Modais
     const modalAdicionar = document.getElementById('adicionar_categoria');
@@ -231,15 +231,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.body.appendChild(containerMensagem);
 
-    // Faz a mensagem aparecer
+    
     setTimeout(() => {
         containerMensagem.classList.add('visivel');
     }, 10);
 
-    // Faz a mensagem desaparecer depois de 3 segundos
+   
     setTimeout(() => {
         containerMensagem.classList.remove('visivel');
-        // Remove o elemento da página após a animação de saída
         setTimeout(() => {
             containerMensagem.remove();
         }, 500);
@@ -262,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let algumaLinhaVisivel = false;
 
         corpoTabela.querySelectorAll('tr').forEach(linha => {
-            // Garante que não estamos tentando filtrar uma linha de "carregando" ou "vazio"
+           
             if (!linha.cells[0] || !linha.cells[1] || !linha.cells[2]) return;
 
             const idLinha = linha.cells[0].textContent.toLowerCase();

@@ -1,281 +1,295 @@
-// Botões que acionam modals
-var modals = document.querySelectorAll('.modal');
-var btnAdd = document.getElementById("add-produto");
-var btnEditar = document.getElementById("editar-produto");
-var btnMovimentar = document.getElementById("movimentar-produto");
-var btnAlterarStatus = document.getElementById("alterarStatus-produto");
-var btnCancelar = document.querySelectorAll('.btn-cancelar');
+document.addEventListener('DOMContentLoaded', () => {
+    // --- CONFIGURAÇÕES E SELETORES GLOBAIS ---
+    const API_BASE_URL = 'http://127.0.0.1:5000/api';
 
-// Função para carregar mensagens ao usuário sobre as operações realizadas
-window.onload = function () {
-    const resultadoOk = document.getElementById('resultado_ok');
-    const resultatoErro = document.getElementById('resultado_erro');
-    const resultadoErroQnt = document.getElementById('quantidade_negativa');
-    const resultadoSemDados = document.getElementById('campos_Npreenchidos');
-    const modal = document.getElementById('mensagem_resultado');
+    // Modais
+    const modalAdicionar = document.getElementById('adicionar_produto');
+    const modalEditar = document.getElementById('editar_produto');
+    const modalMover = document.getElementById('mover_produto');
+    const modalAlterarStatus = document.getElementById('alterar_Status');
+
+    // Formulários
+    const formAdicionar = document.getElementById('Form-adiciona-produto');
+    const formEditar = document.getElementById('Form-editar-produto');
+    const formMover = document.getElementById('Form-mover-produto');
+    const formAlterarStatus = document.getElementById('Form-alterar_Status');
+
+    // Botões
+    const btnAdd = document.getElementById("btn-add-produto");
+    const btnEditar = document.getElementById("btn-editar-produto");
+    const btnMovimentar = document.getElementById("btn-movimentar-produto");
+    const btnAlterarStatus = document.getElementById("btn-alterar-status");
+    const btnsCancelar = document.querySelectorAll('.btn-cancelar');
+
+    // Tabela e Filtros
+    const corpoTabela = document.getElementById('corpo-tabela-produtos');
+    const inputsFiltro = document.querySelectorAll('.pesquisa input');
+    let selectedRow = null;
+
+    // --- FUNÇÕES DA API ---
+
+    /**
+     * Busca todos os produtos da API e popula a tabela.
+     */
+    async function carregarProdutos() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/produtos`);
+            if (!response.ok) throw new Error('Erro ao buscar produtos da API.');
+
+            const produtos = await response.json();
+            corpoTabela.innerHTML = '';
+            const noResultsMessage = document.getElementById('no-results-message');
+            if (noResultsMessage) noResultsMessage.style.display = 'none';
 
 
-    // Verifica se existe uma mensagem de erro
-    if (resultatoErro && resultatoErro.innerText.trim() !== '') {
-        modal.style.display = 'block'; // Mostra o modal
-        resultatoErro.style.display = 'block'; // Mostra a mensagem de erro
-        // Redireciona após 3 segundos
-        setTimeout(() => {
-            window.location.href = "/produtos"; 
-        }, 3000);
-    }
-    // Verifica se existe uma mensagem de sucesso
-    else if (resultadoOk && resultadoOk.innerText.trim() !== '') {
-        modal.style.display = 'block'; // Mostra o modal
-        resultadoOk.style.display = 'block'; // Mostra a mensagem de sucesso
-        // Redireciona após 3 segundos
-        setTimeout(() => {
-            window.location.href = "/produtos"; 
-        }, 3000);
-    }
-    // Verifica se existe uma mensagem de sem dados
-    else if (resultadoSemDados && resultadoSemDados.innerText.trim() !== '') {
-        modal.style.display = 'block'; // Mostra o modal
-        resultadoSemDados.style.display = 'block'; // Mostra a mensagem de sucesso
-        // Redireciona após 3 segundos
-        setTimeout(() => {
-            window.location.href = "/produtos"; 
-        }, 3000);
-    }
-    // Verifica se existe uma mensagem de erro gerado por quantidade negativa
-    else if (resultadoErroQnt && resultadoErroQnt.innerText.trim() !== '') {
-        modal.style.display = 'block'; // Mostra o modal
-        resultadoErroQnt.style.display = 'block'; // Mostra a mensagem de sucesso
-        // Redireciona após 3 segundos
-        setTimeout(() => {
-            window.location.href = "/produtos"; 
-        }, 3000);
-    }
-};
-
-// Função para acionar alerta de estoque baixo
-// Seleciona todas as linhas da tabela, exceto o cabeçalho
-let linhas = document.querySelectorAll('#tabela-produtos tbody tr');
-// Verifica se existem linhas
-if (linhas.length !== 0) {
-    linhas.forEach(linha => {
-        // Seleciona as células da linha e faz verificações de existência
-        let quantidadeElement = linha.children[1]?.querySelector('b i');
-        let quantidadeMinimaElement = linha.children[5];
-        let alerta = linha.querySelector('#alerta_hidden');
-
-        if (quantidadeElement && quantidadeMinimaElement && alerta) {
-            let quantidade = parseInt(quantidadeElement.textContent);
-            let quantidadeMinima = parseInt(quantidadeMinimaElement.textContent);
-            // Verifica se a quantidade está abaixo da quantidade mínima
-            if (quantidade < quantidadeMinima) {
-                // Exibe o alerta se a quantidade estiver baixa
-                alerta.style.display = 'block';
-            } else {
-                // Garante que o alerta esteja oculto caso contrário
-                alerta.style.display = 'none';
+            if (produtos.length === 0) {
+                if (noResultsMessage) noResultsMessage.style.display = 'block';
+                return;
             }
+
+            produtos.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.dataset.id = p.produtoid;
+                // Adiciona todos os dados como data attributes para fácil acesso
+                Object.keys(p).forEach(key => {
+                    tr.dataset[key] = p[key];
+                });
+
+                const alertaEstoque = p.quantidade < p.quantidade_minima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
+
+                tr.innerHTML = `
+                    <td><p>${p.produtoid}</p></td>
+                    <td>
+                        <p>${p.nome}</p>
+                        <p><i>Estoque disponível:</i> <b><i>${p.quantidade}</i></b></p>
+                        ${alertaEstoque}
+                    </td>
+                    <td><p>${p.categoria_id || 'N/A'}</p></td>
+                    <td><p>${p.status}</p></td>
+                    <td class="hidden-td">${p.preco}</td>
+                    <td class="hidden-td">${p.quantidade_minima}</td>
+                `;
+                corpoTabela.appendChild(tr);
+            });
+        } catch (error) {
+            console.error('Falha ao carregar produtos:', error);
+            mostrarMensagem('Falha ao carregar dados dos produtos.', 'erro');
         }
+    }
+
+    async function carregarOpcoesDeCategoria() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/categorias`);
+            if (!response.ok) throw new Error('Erro ao buscar categorias.');
+
+            const categorias = await response.json();
+            const selectsDeCategoria = document.querySelectorAll('select[name="categoria"], select[name="editar-categoria"]');
+
+            selectsDeCategoria.forEach(select => {
+                select.innerHTML = ''; // Limpa opções antigas
+
+                // Adiciona uma opção padrão/placeholder
+                const placeholder = new Option('Selecione uma categoria...', '');
+                placeholder.disabled = true;
+                placeholder.selected = true;
+                select.add(placeholder);
+
+                categorias.forEach(cat => {
+                    if (cat.status.toUpperCase() === 'ATIVO') {
+                        const option = new Option(cat.nome, cat.nome); // O valor enviado será o nome da categoria
+                        select.add(option);
+                    }
+                });
+            });
+        } catch (error) {
+            console.error('Falha ao carregar opções de categoria:', error);
+            document.querySelectorAll('select[name="categoria"], select[name="editar-categoria"]').forEach(select => {
+                select.innerHTML = '<option value="">Erro ao carregar categorias</option>';
+            });
+        }
+    }
+
+    // --- LÓGICA DOS MODAIS E FORMULÁRIOS ---
+
+    const abrirModal = (modal) => modal.style.display = 'flex';
+    const fecharModais = () => {
+        document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+    };
+
+    // Abrir Modais
+    btnAdd.onclick = () => abrirModal(modalAdicionar);
+
+    btnEditar.onclick = () => {
+        if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
+
+        const data = selectedRow.dataset;
+        document.getElementById('editar-produtoid').value = data.produtoid;
+        document.getElementById('editar-nome').value = data.nome;
+        document.getElementById('editar-status').value = data.status;
+        document.getElementById('editar-categoria').value = data.categoria_id;
+        document.getElementById('editar-preco').value = data.preco;
+        document.getElementById('editar-qnt_min').value = data.quantidade_minima;
+
+        abrirModal(modalEditar);
+    };
+
+    btnMovimentar.onclick = () => {
+        if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
+        if (selectedRow.dataset.status.toUpperCase() === 'INATIVO') {
+            return mostrarMensagem('Produto inativo não pode ser movimentado.', 'alerta');
+        }
+        document.getElementById('mover-produtoid').value = selectedRow.dataset.produtoid;
+        abrirModal(modalMover);
+    };
+
+    btnAlterarStatus.onclick = () => {
+        if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
+
+        const data = selectedRow.dataset;
+        const novoStatus = data.status.toUpperCase() === 'ATIVO' ? 'Inativo' : 'Ativo';
+
+        document.getElementById('alterar_Status_selecionado').value = data.produtoid;
+        document.getElementById('nomeProduto').textContent = data.nome;
+        document.getElementById('statusNovo').textContent = novoStatus;
+
+        abrirModal(modalAlterarStatus);
+    };
+
+    // Fechar Modais
+    btnsCancelar.forEach(btn => btn.onclick = (e) => {
+        e.preventDefault();
+        fecharModais();
     });
-}
 
-// Função para selecionar linha da tabela    
-var selectedRow = null;
-document.getElementById("add-produto").style.cursor = "pointer";
-document.getElementById("editar-produto").style.backgroundColor = "#a5a5a5";
-document.getElementById("editar-produto").style.cursor = "normal";
-document.getElementById("movimentar-produto").style.backgroundColor = "#a5a5a5";
-document.getElementById("movimentar-produto").style.cursor = "nomral";
-document.getElementById("alterarStatus-produto").style.backgroundColor = "#a5a5a5";
-document.getElementById("alterarStatus-produto").style.cursor = "nomral";
-document.getElementById('tabela-produtos').addEventListener('click', function (e) {
-    var target = e.target;
-    while (target && target.nodeName !== 'TR') {
-        target = target.parentNode;
-    }
-    if (target && target.nodeName === 'TR') {
-        if (selectedRow) {
-            selectedRow.classList.remove('selected');
-        }
-        selectedRow = target;
-        selectedRow.classList.add('selected');
-        document.getElementById("editar-produto").style.backgroundColor = "#ffffff";
-        document.getElementById("editar-produto").style.cursor = "pointer";
-        document.getElementById("movimentar-produto").style.backgroundColor = "#ffffff";
-        document.getElementById("movimentar-produto").style.cursor = "pointer";
-        document.getElementById("alterarStatus-produto").style.backgroundColor = "#ffffff";
-        document.getElementById("alterarStatus-produto").style.cursor = "pointer";
-    }
-});
+    // Lógica de Submissão de Formulários
+    async function handleFormSubmit(form, url, successMessage, getDados) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitter = e.submitter;
+            if (submitter && submitter.classList.contains('btn-cancelar')) {
+                fecharModais();
+                return;
+            }
+            
+            const dados = getDados(form);
 
-// Função para fechar Modal
-function closeModal(modal) {
-    modal.style.display = "none";
-    if (!(errorMessage && errorMessage.innerText.trim() == '') &&
-        !(resultadoOk && resultadoOk.innerText.trim() == '')) {
-        location.reload();
-    }
-}
+            try {
+                const response = await fetch(`${API_BASE_URL}${url}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
 
-// Função para abrir Modal
-function openModal(modalId) {
-    var modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'block';
-    } else {
-        console.error('Modal não encontrado: ' + modalId);
-    }
-}
-
-// Função para fechar modais ao abrir a tela
-modals.forEach(function (modal) {
-    btnCancelar.onclick = function () {
-        closeModal(modal);
-    }
-
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            closeModal(modal);
-        }
-    }
-});
-
-// Funções acioadas pelos botões:
-// Adicionar produto
-btnAdd.onclick = function () {
-    openModal('adicionar_produto');
-}
-
-// Editar produto
-btnEditar.onclick = function () {
-    if (selectedRow) {
-        var produtoid = selectedRow.children[0].textContent;
-        var nome = selectedRow.children[1].children[0].textContent.trim();
-        var categoria = selectedRow.children[2].textContent.trim(); 
-        var preco = selectedRow.children[4].textContent;
-        var quantidade = selectedRow.children[5].textContent;
-
-        document.getElementById('editar-produtoid').value = produtoid;
-        document.getElementById('editar-nome').value = nome;
-        document.getElementById('editar-categoria').value = categoria;
-        document.getElementById('editar-qnt_min').value = quantidade;
-        document.getElementById('editar-preco').value = preco;
-
-        openModal('editar_produto');
-    } else {
-        document.getElementById("nada_selecionado").style.display = 'block';
-        openModal('mensagem_resultado')
-    }
-}
-
-// Mover produto
-btnMovimentar.onclick = function() {
-    if (selectedRow) {
-        var produtoid = selectedRow.children[0].textContent;
-        var produtoStatus = selectedRow.children[3].textContent.trim();
-        if (produtoStatus === "INATIVO"){                
-            document.getElementById("Produto_inativo").style.display = 'block';
-            openModal('mensagem_resultado')
-        } else {                
-            document.getElementById('mover-produtoid').value = produtoid;
-            openModal('mover_produto');}
-    } else {
-        document.getElementById("nada_selecionado").style.display = 'block';
-        openModal('mensagem_resultado')
-    }
-}
-
-// Alterar status
-btnAlterarStatus.onclick = function () {
-    if (selectedRow) {
-        var produtoid = selectedRow.children[0].textContent;
-        document.getElementById('alterar_Status_selecionado').value = produtoid;
-        var nome = selectedRow.children[1].children[0].textContent.trim();
-        document.getElementById('nomeProduto').textContent = nome;
-        var statusAtual = selectedRow.children[3].textContent.trim(); 
-        var statusNovo = document.getElementById('statusNovo');
-        if (statusAtual === "ATIVO") {
-            statusNovo.textContent = 'Inativo';
-        } else {
-            statusNovo.textContent = 'Ativo';
-        }
-
-        openModal('alterar_Status');
-    } else {
-        document.getElementById("nada_selecionado").style.display = 'block';
-        openModal('mensagem_resultado');
-    }
-}
-
-// Função para filtrar a tabela conforme aquilo que for pesquisado
-document.addEventListener("DOMContentLoaded", function () {
-    // Captura os campos de pesquisa
-    const produtoInput = document.querySelector('#pesquisaProdutoID');
-    const descricaoInput = document.querySelector('#pesquisaNome');
-    const categoriaInput = document.querySelector('#pesquisaCategoria');
-    const statusInput = document.querySelector('#pesquisaStatus');
-
-    // Captura a tabela, linhas da tabela e a mensagem de "nenhum produto encontrado"
-    const tabelaProdutos = document.querySelector('#tabela-produtos');
-    const linhasProdutos = tabelaProdutos.querySelectorAll('tr');
-    const noResultsMessage = document.querySelector('#no-results-message');
-
-    // Função para filtrar os produtos
-    function filtrarTabela() {
-        const produtoValue = produtoInput.value.toLowerCase();
-        const descricaoValue = descricaoInput.value.toLowerCase();
-        const categoriaValue = categoriaInput.value.toLowerCase();
-        const statusValue = statusInput.value.toLowerCase();
-
-        let algumProdutoEncontrado = false; // Variável para verificar se encontramos produtos
-
-        // Percorre as linhas da tabela (ignora o cabeçalho)
-        linhasProdutos.forEach(linha => {
-            const colunas = linha.querySelectorAll('td');
-
-            // Se houver colunas (linha não for cabeçalho)
-            if (colunas.length > 0) {
-                const produtoId = colunas[0].textContent.toLowerCase();
-                const nomeProduto = colunas[1].textContent.toLowerCase();
-                const categoria = colunas[2].textContent.toLowerCase();
-                const status = colunas[3].textContent.toLowerCase().trim();
-
-                // Verifica se todos os filtros correspondem
-                const correspondeProduto = produtoValue === '' || produtoId.includes(produtoValue);
-                const correspondeDescricao = descricaoValue === '' || nomeProduto.includes(descricaoValue);
-                const correspondeCategoria = categoria.includes(categoriaValue);
-
-                // Lógica de status: verifica se começa com "a" ou "i"
-                let correspondeStatus = false;
-                if (statusValue.startsWith("a")) {
-                    correspondeStatus = status === "ativo";
-                } else if (statusValue.startsWith("i")) {
-                    correspondeStatus = status === "inativo";
-                } else if (statusValue === '') {
-                    correspondeStatus = true; // Se o campo de pesquisa estiver vazio, mostra todos os status
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.Erro || 'Ocorreu um erro.');
                 }
+                
+                fecharModais();
+                mostrarMensagem(result.Mensagem || successMessage, 'ok');
+                carregarProdutos();
+                form.reset();
 
-                // Exibe ou esconde a linha com base no filtro
-                if (correspondeProduto && correspondeDescricao && correspondeCategoria && correspondeStatus) {
-                    linha.style.display = ''; // Exibe a linha
-                    algumProdutoEncontrado = true; // Encontrou pelo menos um produto
-                } else {
-                    linha.style.display = 'none'; // Esconde a linha
-                }
+            } catch (error) {
+                mostrarMensagem(error.message, 'erro');
             }
         });
-
-        // Se nenhum produto foi encontrado, exibe a mensagem
-        if (algumProdutoEncontrado) {
-            noResultsMessage.style.display = 'none'; // Esconde a mensagem
-        } else {
-            noResultsMessage.style.display = 'block'; // Exibe a mensagem
-        }
     }
 
-    // Adiciona o evento de input diretamente aos campos de pesquisa
-    produtoInput.addEventListener('input', filtrarTabela);
-    descricaoInput.addEventListener('input', filtrarTabela);
-    categoriaInput.addEventListener('input', filtrarTabela);
-    statusInput.addEventListener('input', filtrarTabela);
+    // --- FUNÇÕES AUXILIARES E EVENTOS ---
+
+    // Selecionar linha da tabela
+    corpoTabela.addEventListener('click', (e) => {
+        const targetRow = e.target.closest('tr');
+        if (!targetRow || !targetRow.dataset.id) return;
+
+        if (selectedRow) selectedRow.classList.remove('selected');
+        selectedRow = targetRow;
+        selectedRow.classList.add('selected');
+    });
+
+    // Função para mostrar mensagens de feedback
+    function mostrarMensagem(mensagem, tipo = 'alerta') {
+        const container = document.getElementById('mensagem_resultado');
+        const conteudo = document.getElementById('mensagem_resultado_conteudo');
+        
+        let tipoClasse = '';
+        switch(tipo) {
+            case 'ok':
+                tipoClasse = 'resultado_ok';
+                break;
+            case 'erro':
+                tipoClasse = 'resultado_erro';
+                break;
+            case 'alerta':
+                tipoClasse = 'campos_Npreenchidos';
+                break;
+        }
+
+        conteudo.innerHTML = `<div class="mensagem" id="${tipoClasse}"><p>${mensagem}</p></div>`;
+        container.style.display = 'flex';
+
+        setTimeout(() => {
+            container.style.display = 'none';
+        }, 3000);
+    }
+
+    // Lógica de filtragem
+    function filtrarTabela() {
+        const filtros = Array.from(inputsFiltro).map(input => input.value.toLowerCase());
+        let algumaLinhaVisivel = false;
+
+        corpoTabela.querySelectorAll('tr').forEach(linha => {
+            const id = linha.cells[0].textContent.toLowerCase();
+            const nome = linha.cells[1].textContent.toLowerCase();
+            const categoria = linha.cells[2].textContent.toLowerCase();
+            const status = linha.cells[3].textContent.toLowerCase();
+
+            const corresponde =
+                id.includes(filtros[0]) &&
+                nome.includes(filtros[1]) &&
+                categoria.includes(filtros[2]) &&
+                status.includes(filtros[3]);
+
+            linha.style.display = corresponde ? '' : 'none';
+            if (corresponde) algumaLinhaVisivel = true;
+        });
+
+        const noResultsMessage = document.getElementById('no-results-message');
+        if (noResultsMessage) noResultsMessage.style.display = algumaLinhaVisivel ? 'none' : 'block';
+    }
+
+    inputsFiltro.forEach(input => input.addEventListener('input', filtrarTabela));
+
+    // --- INICIALIZAÇÃO ---
+    handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucesso!', (form) => ({
+        nome: form.nome.value,
+        status: form.status.value,
+        categoria: form.categoria.value,
+        preco: form.preco.value,
+        qnt_min: form.qnt_min.value
+    }));
+
+    handleFormSubmit(formEditar, '/produto/editar', 'Produto editado com sucesso!', (form) => ({
+        produtoid: form['editar-produtoid'].value,
+        nome: form['editar-nome'].value,
+        status: form['editar-status'].value,
+        categoria: form['editar-categoria'].value,
+        preco: form['editar-preco'].value,
+        qnt_min: form['editar-qnt_min'].value
+    }));
+
+    handleFormSubmit(formMover, '/produto/mover', 'Estoque atualizado com sucesso!', (form) => ({
+       produtoid: form['mover-produtoid'].value,
+       tipo: form['tipo-mover'].value,
+       quantidade: form['quantidade-mover'].value
+    }));
+    
+    handleFormSubmit(formAlterarStatus, '/produto/alterar_status', 'Status do produto alterado com sucesso!', (form) => ({
+        produtoid: form['alterar_Status_selecionado'].value
+    }));
+
+    carregarOpcoesDeCategoria();
+    carregarProdutos();
 });

@@ -64,9 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p><i>Estoque disponível:</i> <b><i>${p.quantidade}</i></b></p>
                         ${alertaEstoque}
                     </td>
-                    <td><p>${p.categoria_id || 'N/A'}</p></td>
+                    <td><p>${p.nome_categoria || 'N/A'}</p></td>
                     <td><p>${p.status}</p></td>
-                    <td class="hidden-td">${p.preco}</td>
+                    <td><p>${p.preco}</P></td>
                     <td class="hidden-td">${p.quantidade_minima}</td>
                 `;
                 corpoTabela.appendChild(tr);

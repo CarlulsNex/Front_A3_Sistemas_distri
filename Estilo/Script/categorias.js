@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const formData = new FormData(formAdicionar);
         const dados = Object.fromEntries(formData.entries());
-
+        console.log('Dados que serão enviados para a API:', dados);
         try {
             const response = await fetch(`${API_BASE_URL}/categoria/criar`, {
                 method: 'POST',

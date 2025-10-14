@@ -1,16 +1,12 @@
-// Este evento garante que o script só será executado após o carregamento completo do HTML.
 document.addEventListener('DOMContentLoaded', function() {
 
     // Define as URLs base da sua API.
     const API_BASE_URL = 'http://127.0.0.1:5000/api';
 
-    /**
-     * Função para buscar e atualizar os CARDS de resumo.
-     * Ela chama o novo endpoint que já retorna os dados prontos.
-     */
+
     async function carregarDadosDosCards() {
         try {
-            // Chama o endpoint de resumo que retorna um OBJETO com os totais.
+            
             const response = await fetch(`${API_BASE_URL}/relatorio/resumo`);
 
             if (!response.ok) {
@@ -19,28 +15,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const dados = await response.json();
 
-            // Atualiza os elementos HTML diretamente com os dados recebidos.
-            // Não precisamos mais calcular nada no JavaScript!
             document.getElementById('total-produtos').textContent = dados.total_produtos;
             document.getElementById('estoque-baixo').textContent = dados.produtos_estoque_baixo;
             document.getElementById('total-categorias').textContent = dados.categorias_ativas;
 
         } catch (error) {
             console.error("Erro ao carregar cards:", error);
-            // Em caso de erro, exibe uma mensagem nos cards.
             document.getElementById('total-produtos').textContent = 'Erro';
             document.getElementById('estoque-baixo').textContent = 'Erro';
             document.getElementById('total-categorias').textContent = 'Erro';
         }
     }
 
-    /**
-     * Função para buscar e exibir as movimentações recentes na TABELA.
-     * Ela chama o endpoint antigo que retorna um ARRAY de movimentações.
-     */
+
     async function carregarMovimentacoesRecentes() {
         try {
-            // Chama o endpoint que retorna a lista (ARRAY) de todas as movimentações.
+            // Retorna a lista (ARRAY) de todas as movimentações.
             const response = await fetch(`${API_BASE_URL}/relatorios`);
             
             if (!response.ok) {
@@ -49,8 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const movimentacoes = await response.json();
             const corpoTabela = document.getElementById('corpo-tabela-recentes');
-
-            // Limpa a mensagem de "Carregando..."
             corpoTabela.innerHTML = ''; 
 
             if (!movimentacoes || movimentacoes.length === 0) {
@@ -88,7 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Chama as duas funções para carregar os dados do dashboard assim que a página estiver pronta.
     carregarDadosDosCards();
     carregarMovimentacoesRecentes();
 });

@@ -1,11 +1,33 @@
+/* =============================================== */
+/* GERAIS E VARIÁVEIS                              */
+/* =============================================== */
 
-/*gerais*/
-
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Open Sans', sans-serif;
+    /* Suaviza a transição de cores, sombras e movimentos em geral */
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+:root {
+    /* Cor Primária: Verde-azulado profissional */
+    --cor-principal: hsl(207, 70%, 40%); 
+    --cor-principal-hover: hsl(207, 70%, 50%); 
+    --cor-principal-ativa: hsl(207, 80%, 30%); 
+
+    /* Neutros */
+    --cinza-claro: #F4F4F9; /* Fundo levemente mais suave */
+    --cinza-medio: #EAEAEB; 
+    --cinza-escuro: #D0D0D5; 
+    --preto: #222222; /* Preto menos agressivo */
+    --branco: #FFFFFF;
+
+    /* Cores de Feedback */
+    --vermelho-erro: #D32F2F;
+    --amarelo-alerta: #FBC02D;
+    --verde-sucesso: #28A745;
 }
 
 html,
@@ -13,38 +35,31 @@ body {
     height: 100%;
     background-color: var(--cinza-claro);
     color: var(--preto);
+    /* Suaviza a renderização de fontes */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-:root {
-    --lima: #03A64A;
-    --verde: #027333;
-    --cinza-claro: #F7F7F7;
-    --cinza-medio: #EAEAEA;
-    --cinza-escuro: #D9D9D9;
-    --preto: #0D0D0D;
-    --branco: #FFFFFF;
-    --vermelho-erro: #D32F2F;
-    --amarelo-alerta: #FBC02D;
-}
-
-/*topo*/
+/* =============================================== */
+/* TOPO (HEADER)                                   */
+/* =============================================== */
 
 #topo {
     width: 100%;
-    background-color: var(--verde);
-    padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--cor-principal);
+    padding: 15px 30px; /* Mais "respiro" */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 
-/* --- Botões de Navegação --- */
+/* --- Botões de Navegação (Páginas) --- */
 #botoes_paginas {
     display: flex;
     align-items: center;
-    gap: 15px;
-    flex-wrap: wrap; 
+    gap: 10px; 
+    flex-wrap: wrap;
 }
 
 #botoes_paginas a {
@@ -52,43 +67,53 @@ body {
 }
 
 #botoes_paginas button {
-    height: 70px;
-    background-color: var(--cinza-escuro);
-    width: 220px;
-    font-size: 24px;
+    height: 60px; 
+    width: 200px; 
+    font-size: 18px; 
     color: var(--preto);
-    border-radius: 15px;
-    border: 1px solid var(--preto);
+    background-color: var(--cinza-claro);
+    border-radius: 8px; 
+    border: none; /* Visual mais limpo */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s, transform 0.2s;
 }
 
 #botoes_paginas button:hover {
-    background-color: #e6e6e6;
+    background-color: var(--cinza-medio);
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 #botoes_paginas button img {
-    margin-right: 15px;
-    height: 50px;
+    margin-right: 10px; 
+    height: 30px; 
 }
 
 #botao-ativo {
-    background-color: var(--lima);
+    background-color: var(--cor-principal-ativa);
     color: var(--branco);
-    font-weight: bold;
+    font-weight: 700;
+    /* Efeito de anel de foco moderno */
+    box-shadow: 0 0 0 3px var(--cor-principal-hover); 
+    transform: none; 
 }
 
-/* --- (CRUD) --- */
+#botao-ativo:hover {
+    background-color: var(--cor-principal-ativa); 
+    box-shadow: 0 0 0 3px var(--cor-principal-hover);
+    transform: none;
+}
+
+/* --- CRUD Botões --- */
 #botoes_crud {
     display: flex;
     align-items: center;
     gap: 15px;
-    padding-top: 5px;
-    border-top: 1px solid rgba(247, 247, 247, 0.3);
+    padding-top: 15px; 
+    border-top: 1px solid rgba(255, 255, 255, 0.2); 
 }
 
 #botoes_crud ul {
@@ -98,26 +123,42 @@ body {
 }
 
 #botoes_crud input[type="button"] {
-    height: 40px;
+    height: 45px; 
     width: 185px;
-    font-size: 18px;
-    border-radius: 10px;
-    border: 1px solid var(--preto);
+    font-size: 16px; 
+    border-radius: 6px;
+    border: none; 
     cursor: pointer;
-    background-color: var(--cinza-claro);
-    transition: background-color 0.3s;
+    background-color: var(--cinza-medio); 
+    color: var(--preto);
+    font-weight: 600;
 }
 
 #botoes_crud input[type="button"]:hover {
-    background-color: var(--cinza-escuro);
+    background-color: var(--cinza-claro);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Conteudo principal */
+/* Estilo para ação principal do CRUD (Ex: "Adicionar Novo") */
+#botoes_crud input[type="button"].principal {
+    background-color: var(--cor-principal-hover);
+    color: var(--branco);
+}
+
+#botoes_crud input[type="button"].principal:hover {
+    background-color: var(--cor-principal-ativa);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* =============================================== */
+/* CONTEÚDO PRINCIPAL (MAIN)                       */
+/* =============================================== */
+
 #main {
     padding: 30px;
 }
 
-/* CSS Dashboard*/
+/* --- Dashboard Cards --- */
 
 .main-header {
     margin-bottom: 30px;
@@ -131,12 +172,12 @@ body {
 
 .main-header p {
     font-size: 1.2em;
-    color: #666;
+    color: #6A6A6A; 
 }
 
 #dashboard-cards {
     display: flex;
-    gap: 30px;
+    gap: 20px; 
     justify-content: space-around;
     flex-wrap: wrap;
     margin-bottom: 50px;
@@ -144,42 +185,43 @@ body {
 
 .card {
     background-color: var(--branco);
-    border-radius: 8px;
-    padding: 25px;
+    border-radius: 12px; /* Bordas mais suaves */
+    padding: 30px; 
     text-align: center;
     flex-basis: 300px; 
     flex-grow: 1; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* Sombra suave */
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Efeito de elevação */
 }
 
 .card h2 {
-    font-size: 1.2em;
-    color: #333;
+    font-size: 1.1em; 
+    color: #555;
     margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .card .card-dado {
-    font-size: 3em;
+    font-size: 3.5em; 
     font-weight: bold;
-    color: var(--verde);
+    color: var(--cor-principal-ativa); 
 }
 
-
-/* Filtros e Header*/
+/* --- Filtros e Header --- */
 
 #cabecalho, 
 #filtros-container,
 #recentes-container {
     background-color: var(--branco);
     padding: 25px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+    border-radius: 10px;
+    margin-bottom: 20px;
 }
 
 .filtros-wrapper, #cabecalho {
@@ -197,49 +239,39 @@ body {
 
 .pesquisa p, .filtro-grupo label {
     font-weight: 600;
-    color: #333;
+    color: var(--preto);
 }
 
 .pesquisa input[type="text"],
 .filtro-grupo input,
-.filtro-grupo select {
-    background-color: var(--cinza-claro);
-    border: 1px solid var(--cinza-escuro);
-    border-radius: 6px;
-    padding: 10px;
-    font-size: 16px;
+.filtro-grupo select,
+.editar-nome,
+.editar-status {
+    background-color: var(--branco);
+    border: 1px solid var(--cinza-medio);
+    border-radius: 8px; 
+    padding: 12px 10px; /* Mais padding vertical */
+    font-size: 15px;
     min-width: 220px;
-    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .pesquisa input[type="text"]:focus,
 .filtro-grupo input:focus,
-.filtro-grupo select:focus {
+.filtro-grupo select:focus,
+.editar-nome:focus,
+.editar-status:focus {
     outline: none;
-    border-color: var(--verde);
+    border-color: var(--cor-principal-hover);
     box-shadow: 0 0 0 3px rgba(3, 166, 74, 0.2);
 }
-.radio-group label::before {
-    content: '';
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--cinza);
-    border-radius: 50%;
-    margin-right: 8px;
-    transition: all 0.2s;
-}
 
-.radio-group input[type="radio"]:checked + label::before {
-    background-color: var(--verde);
-    border-color: var(--verde);
-    box-shadow: 0 0 0 3px white inset;
-}
+/* --- Radio Group --- */
+
 .radio-group {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding-top: 20px; /* Alinha com os outros campos */
+    padding-top: 20px;
 }
 
 .radio-group label {
@@ -250,20 +282,40 @@ body {
 }
 
 .radio-group input[type="radio"] {
-    display: none; /* Oculta o input padrão */
+    display: none; 
 }
+
+.radio-group label::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--cinza-escuro); 
+    border-radius: 50%;
+    margin-right: 8px;
+    transition: all 0.2s;
+}
+
+.radio-group input[type="radio"]:checked + label::before {
+    background-color: var(--cor-principal);
+    border-color: var(--cor-principal);
+    box-shadow: 0 0 0 3px var(--branco) inset;
+}
+
+/* --- Mensagens Popup de Feedback --- */
 .mensagem-popup {
     position: fixed;
     top: 20px;
     right: 20px;
     padding: 15px 25px;
-    border-radius: 5px;
+    border-radius: 8px; 
     color: white;
     font-size: 16px;
     z-index: 1000;
     opacity: 0;
     transform: translateY(-20px);
     transition: opacity 0.4s ease, transform 0.4s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .mensagem-popup.visivel {
@@ -271,17 +323,27 @@ body {
     transform: translateY(0);
 }
 
-.mensagem-popup.ok { background-color: #28a745; }
-.mensagem-popup.erro { background-color: #dc3545; }
-.mensagem-popup.alerta { background-color: #ffc107; color: #333; }
+.mensagem-popup.ok { 
+    background-color: var(--verde-sucesso); 
+}
+.mensagem-popup.erro { 
+    background-color: var(--vermelho-erro); 
+}
+.mensagem-popup.alerta { 
+    background-color: var(--amarelo-alerta); 
+    color: var(--preto); /* Melhor contraste */
+}
 
-/* Tabela com resultados */ 
+/* --- Tabela com resultados --- */ 
 
-#tabela-container, #tabela {
+#tabela-container {
     flex-grow: 1; 
     overflow-y: auto; 
     background-color: var(--branco);
     margin-top: 30px; 
+    border-radius: 10px; /* Borda arredondada no container */
+    overflow: hidden; /* Garante que a borda do container corte a borda da tabela */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 #recentes-container h2 {
@@ -314,21 +376,26 @@ tbody tr:nth-child(even) {
 }
 
 tbody tr:hover {
-    background-color: #d8f3e5;
+    background-color: #e5f6ee; /* Verde suave para hover */
 }
 
 tbody tr.selected {
-    background-color: #a3b1ac;
+    background-color: var(--cor-principal-hover);
     color: var(--branco);
 }
 
 .hidden-td { display: none; }
 #alerta_hidden { display: none; }
 
-/* Pop-ups */
+
+/* =============================================== */
+/* POP-UPS / MODAIS - CORREÇÃO DE VISIBILIDADE     */
+/* =============================================== */
 
 .modal {
-    display: none;
+    /* *** CORREÇÃO: ESCONDE POR PADRÃO *** */
+    display: none; 
+    
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -336,25 +403,102 @@ tbody tr.selected {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     justify-content: center;
     align-items: center;
 }
 
 .modal.ativo {
+    /* *** CORREÇÃO: MOSTRA SOMENTE QUANDO TEM CLASSE 'ATIVO' *** */
     display: flex;
 }
 
+/* A caixa branca do modal */
 .modal-conteudo {
-    background-color: #fefefe;
+    background-color: var(--branco);
     margin: auto;
-    border: 1px solid #888;
-    width: 90%;
-    max-width: 550px;
+    padding: 30px 40px; 
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    animation: fadeIn 0.3s ease-out; 
     display: flex;
     flex-direction: column;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Título e Conteúdo do modal */
+.modal-conteudo h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.modal-conteudo .infos p {
+    font-size: 1.1em;
+    color: #666;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.modal-conteudo .infos b {
+    color: var(--cor-principal-ativa); 
+}
+
+/* Inputs dentro do modal (herdam o estilo dos inputs globais) */
+.editar-nome, .editar-status {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* Div que alinha os botões */
+.botoes-decisao-box {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Estilo base para os botões de Cancelar e Confirmar */
+.btn-decisao {
+    border: none;
+    padding: 12px 30px; 
+    font-size: 1.05em;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-decisao:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-decisao:active {
+    transform: scale(0.98);
+}
+
+.btn-cancelar {
+    background-color: var(--cinza-medio);
+    color: var(--preto);
+}
+.btn-cancelar:hover {
+    background-color: var(--cinza-escuro);
+}
+
+.btn-confirmar {
+    background-color: var(--verde-sucesso); /* Cor de sucesso para confirmação */
+    color: var(--branco);
+}
+.btn-confirmar:hover {
+    background-color: #1e7e34;
 }
 
 
@@ -372,10 +516,9 @@ tbody tr.selected {
     #botoes_paginas button p {
        display: none;
     }
-    #Campo_nome
 
     #botoes_paginas button {
-        width: 70px;
+        width: 60px; /* Mais compacto, apenas ícone */
         justify-content: center;
     }
 
@@ -398,6 +541,10 @@ tbody tr.selected {
     #main {
         padding: 15px;
     }
+    
+    #topo {
+        padding: 10px 15px;
+    }
 
     .filtros-wrapper, #cabecalho {
         flex-direction: column;
@@ -411,120 +558,79 @@ tbody tr.selected {
         width: 100%;
     }
 
+    .card {
+        flex-basis: 100%; /* Cartões ocupam toda a largura em telas pequenas */
+    }
+
     .modal-conteudo {
+        padding: 20px 25px;
         width: 95%;
         margin-top: 5%;
     }
     
 }
 
-.modal {
-    display: none; 
-    position: fixed;
-    z-index: 1000; 
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.6);
-    justify-content: center;
-    align-items: center;
-}
-
-/* A caixa branca do modal */
-.modal-conteudo {
-    background-color: #ffffff;
-    margin: auto;
-    padding: 25px 30px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 450px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    animation: fadeIn 0.3s ease-out; /* Animação de entrada */
-}
-
-/* Animação para o modal aparecer suavemente */
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-
-/* Título do modal (ex: "Alterar Status da Categoria") */
-.modal-conteudo h2 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.5em;
-    color: #333;
-}
-
-/* Parágrafo com a pergunta de confirmação */
-.modal-conteudo .infos p {
-    font-size: 1.1em;
-    color: #555;
-    margin-bottom: 25px;
-    line-height: 1.5;
-}
-
-/* Destaque para o nome da categoria e o novo status */
-.modal-conteudo .infos b {
-    color: #007bff; 
-}
-.editar-nome{
-    background-color: var(--cinza-claro);
-    border: 1px solid var(--cinza-escuro);
-    border-radius: 6px;
-    padding: 10px;
-    font-size: 16px;
-    min-width: 220px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.editar-status{
-    background-color: var(--cinza-claro);
-    border: 1px solid var(--cinza-escuro);
-    border-radius: 6px;
-    font-size: 16px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-/* Div que alinha os botões */
-.botoes-decisao-box {
+/* Container principal dos campos */
+.modal-conteudo .infos {
     display: flex;
-    justify-content: center;
-    gap: 15px;
+    flex-wrap: wrap; /* Permite quebrar em telas menores */
+    gap: 20px; /* Espaço entre as colunas */
+    margin-bottom: 25px;
 }
 
-/* Estilo base para os botões de Cancelar e Confirmar */
-.btn-decisao {
-    border: none;
-    padding: 12px 25px;
+/* Containers de Coluna */
+.modal-conteudo .infos-1,
+.modal-conteudo .infos-2,
+.modal-conteudo .infos-3 {
+    display: flex;
+    flex-direction: column; /* Organiza os campos verticalmente dentro da coluna */
+    flex-grow: 1;
+    min-width: 250px; /* Garante que a coluna não fique muito estreita */
+}
+/* O infos-3 terá que ocupar a largura total no layout de 2 colunas para o campo de Qnt Mínima */
+.modal-conteudo .infos-3 {
+    min-width: 100%;
+}
+
+/* Ajusta o layout interno de cada campo */
+.modal-conteudo .novos-dados {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px; /* Controla o espaçamento entre campos */
+}
+
+/* Remove quebras de linha (<br>) redundantes do HTML */
+.modal-conteudo .novos-dados br {
+    display: none;
+}
+
+/* Labels */
+.modal-conteudo label {
+    font-weight: 600;
+    color: var(--preto);
+    margin-bottom: 6px;
+    text-align: left; /* Alinha labels à esquerda */
+    font-size: 0.95em;
+}
+
+/* Inputs e Selects dentro do Modal (Substitua qualquer estilo anterior para estes elementos) */
+.modal-conteudo input[type="text"],
+.modal-conteudo input[type="number"],
+.modal-conteudo select {
+    /* HERDA DE GERAIS: transition, etc. */
+    background-color: var(--branco);
+    border: 1px solid var(--cinza-medio);
+    border-radius: 8px;
+    padding: 10px 12px; /* Espaçamento interno */
     font-size: 1em;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    width: 100%;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Sombra interna para profundidade */
 }
 
-.btn-decisao:hover {
-    opacity: 0.9;
-}
-
-.btn-decisao:active {
-    transform: scale(0.98);
-}
-
-/* Botão de Cancelar (cinza/branco) */
-.btn-cancelar {
-    background-color: #f0f0f0;
-    color: #555;
-    border: 1px solid #ccc;
-}
-
-/* Botão de Confirmar (verde) */
-.btn-confirmar {
-    background-color: #28a745; 
-    color: white;
+.modal-conteudo input[type="text"]:focus,
+.modal-conteudo input[type="number"]:focus,
+.modal-conteudo select:focus {
+    outline: none;
+    border-color: var(--cor-principal-hover);
+    box-shadow: 0 0 0 3px rgba(var(--cor-principal-hover), 0.2); /* Foco visual */
 }

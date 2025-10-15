@@ -292,4 +292,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     carregarOpcoesDeCategoria();
     carregarProdutos();
+
+    
 });
+
+

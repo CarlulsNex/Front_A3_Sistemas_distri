@@ -4,14 +4,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const API_BASE_URL = 'http://127.0.0.1:5000/api';
 
 
-    
     async function carregarDadosDosCards() {
         try {
             
             const response = await fetch(`${API_BASE_URL}/relatorio/resumo`);
 
             if (!response.ok) {
-                throw new Error('Falha ao buscar dados dos cards');
                 throw new Error('Falha ao buscar dados dos cards');
             }
 
@@ -44,7 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
             corpoTabela.innerHTML = ''; 
 
             if (!movimentacoes || movimentacoes.length === 0) {
-            if (!movimentacoes || movimentacoes.length === 0) {
                 corpoTabela.innerHTML = '<tr><td colspan="4">Nenhuma movimentação recente encontrada.</td></tr>';
                 return;
             }
@@ -52,12 +49,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Ordena as movimentações da mais recente para a mais antiga
             movimentacoes.sort((a, b) => new Date(b.data_entrada || b.data_saida) - new Date(a.data_entrada || a.data_saida));
 
-            
-            // Ordena as movimentações da mais recente para a mais antiga
-            movimentacoes.sort((a, b) => new Date(b.data_entrada || b.data_saida) - new Date(a.data_entrada || a.data_saida));
+            // Pega apenas as 5 movimentações mais recentes
+            const recentes = movimentacoes.slice(0, 5);
 
             // Cria uma linha na tabela para cada movimentação
-            recentes.forEach(mov => {
             recentes.forEach(mov => {
                 const linha = document.createElement('tr');
                 
@@ -65,14 +60,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const tipo = mov.entradaid ? 'Entrada' : 'Saída'; 
                 const dataFormatada = new Date(mov.data_entrada || mov.data_saida).toLocaleDateString('pt-BR');
 
-
                 linha.innerHTML = `
                     <td>${tipo}</td>
-
                     <td>${mov.nome_produto}</td>
                     <td>${mov.quantidade}</td>
                     <td>${dataFormatada}</td>
-
                 `;
                 corpoTabela.appendChild(linha);
             });

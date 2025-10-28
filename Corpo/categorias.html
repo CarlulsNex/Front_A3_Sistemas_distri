@@ -69,6 +69,15 @@
                 <p>Status</p>
                 <input type="text" id="pesquisaStatus" />
             </div>
+                    <div class="pesquisa">
+            <p>Embalagem</p>
+            <input type="text" id="pesquisaEmbalagem" />
+        </div>
+            <div class="pesquisa">
+            <p>Tamanho</p>
+            <input type="text" id="pesquisaTamanho" />
+        </div>
+
         </div>
         <div id="no-results-message" style="display: none; text-align: center; color: red; margin-top: 100px;">
             <p>Nenhuma categoria encontrada!</p>
@@ -80,6 +89,8 @@
                         <th style="width: 10%;">ID</th>
                         <th style="width: 60%;">Nome</th>
                         <th style="width: 30%;">Status</th>
+                        <th style="width: 30%;">Embalagem</th>
+                        <th style="width: 30%;">Tamanho</th>
                     </tr>
                 </thead>
                 <tbody id="corpo-tabela-categorias">
@@ -99,7 +110,11 @@
                     <div class="infos-1">
                         <div class="novos-dados">
                             <label for="Modal_editar_nome">Nome:</label><br />
-                            <input type="text" id="Modal_editar_nome" name="nome"class="editar-nome" required><br><br>
+                            <input type="text" id="Modal_editar_nome" name="nome"class="editar-nome" required><br>
+                        </div>
+                        <div class="novos-dados">
+                            <label for="Modal_editar_embalagem">Embalagem:</label><br />
+                            <input type="text" id="Modal_editar_embalagem" name="tamanho"class="editar-nome" required><br>
                         </div>
                         <div class="novos-dados">
                             <label for="Modal_editar_status">Status:</label><br />
@@ -108,6 +123,16 @@
                                     <option value="INATIVO">Inativo</option>
                                 </select>
                         </div>
+                        <div class="novos-dados">
+                            <label for="Modal_editar_tamanho">Tamanho:</label><br/>
+                                    <select class="editar-status" id="Modal_editar_tamanho" name="tamanho">
+                                    <option value="GRANDE">Grande</option>
+                                    <option value="MÉDIO">Médio</option>
+                                    <option value="PEQUENO">Pequeno</option>
+                                </select>   
+                                <br><br>
+                        </div>
+
                     </div>
                 </div>
                 <div class="botoes-decisao-box">
@@ -118,17 +143,34 @@
         </div>
     </div>
 
-    <div id="editar_categoria" class="modal">
+        <div id="editar_categoria" class="modal">
         <div class="modal-conteudo">
             <h2>Editar Categoria</h2>
             <form id="Form-editar-categoria">
                 <div class="infos">
-                    <input type="hidden" id="categoriaid" name="categoriaid">
+                    
+                    <input type="hidden" id="editar-categoriaid" name="categoriaid">
+                    
                     <div class="infos-1">
                         <div class="novos-dados">
                             <label for="editar-nome">Nome:</label><br />
                             <input type="text" id="editar-nome" class="editar-nome" required><br><br>
                         </div>
+
+                        <div class="novos-dados">
+                            <label for="editar-embalagem">Embalagem:</label><br />
+                            <input type="text" id="editar-embalagem" class="editar-nome"><br><br>
+                        </div>
+                        
+                        <div class="novos-dados">
+                            <label for="editar-tamanho">Tamanho:</label><br/>
+                            <select class="editar-status" id="editar-tamanho" name="tamanho">
+                                <option value="GRANDE">Grande</option>
+                                <option value="MÉDIO">Médio</option>
+                                <option value="PEQUENO">Pequeno</option>
+                            </select> 
+                        </div>
+
                         <div class="novos-dados">
                             <label for="editar-status">Status:</label><br />
                             <select class="editar-status" id="editar-status">

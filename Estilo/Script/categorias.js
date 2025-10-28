@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- CONFIGURAÇÕES E SELETORES GLOBAIS ---
-    const API_BASE_URL = 'http://127.0.0.1:5000/api';
+    const API_BASE_URL = 'http://127.0.0.1:8080/api';
 
     // Modais
     const modalAdicionar = document.getElementById('adicionar_categoria');
@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td><p>${cat.categoriaid}</p></td>
                     <td><p>${cat.nome}</p></td>
                     <td><p>${cat.status}</p></td>
+                    <td><p>${cat.embalagem || ''}</p></td>
+                    <td><p>${cat.tamanho || ''}</p></td>
                 `;
                 corpoTabela.appendChild(tr);
             });
@@ -78,6 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('categoriaid').value = selectedRow.dataset.id;
         document.getElementById('editar-nome').value = selectedRow.cells[1].textContent;
         document.getElementById('editar-status').value = selectedRow.cells[2].textContent.trim().toUpperCase();
+        document.getElementById('editar-tamanho').value = selectedRow.cells[4].textContent.trim().toUpperCase();
+        document.getElementById('editar-embalagem').value = selectedRow.cells[3].textContent.trim().toUpperCase();
         abrirModal(modalEditar);
     };
 
@@ -112,7 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
     formAdicionar.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(formAdicionar);
+        formData.append('tamanho', document.getElementById('Modal_editar_tamanho').value);
+        formData.append('embalagem', document.getElementById('Modal_editar_embalagem').value);
         const dados = Object.fromEntries(formData.entries());
+
         console.log('Dados que serão enviados para a API:', dados);
         try {
             const response = await fetch(`${API_BASE_URL}/categoria/criar`, {
@@ -141,11 +148,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const editCategoriaId = document.getElementById('categoriaid').value;
         const nome= document.getElementById('editar-nome').value;
         const status= document.getElementById('editar-status').value;
+        const tamanho= document.getElementById('editar-tamanho').value;
+        const embalagem= document.getElementById('editar-embalagem').value;
 
                     const dados = {
                 nome: nome,
                 editStatus: status,
                 editCategoriaId: editCategoriaId,
+                editTamanho: tamanho,
+                editEmbalagem: embalagem,
                 
             }
 
@@ -249,29 +260,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputsFiltro = [
         document.querySelector('#pesquisaCategoriaID'),
         document.querySelector('#pesquisaNome'),
-        document.querySelector('#pesquisaStatus')
+        document.querySelector('#pesquisaStatus'),
+        document.querySelector('#pesquisaTamanho'),
+        document.querySelector('#pesquisaEmbalagem')
     ];
 
     function filtrarTabela() {
         const idFiltro = inputsFiltro[0].value.toLowerCase();
         const nomeFiltro = inputsFiltro[1].value.toLowerCase();
         const statusFiltro = inputsFiltro[2].value.toLowerCase();
+        const tamanhoFiltro = inputsFiltro[3].value.toLowerCase();
+        const embalagemFiltro = inputsFiltro[4].value.toLowerCase();
         const noResultsMessage = document.querySelector('#no-results-message');
         
         let algumaLinhaVisivel = false;
 
         corpoTabela.querySelectorAll('tr').forEach(linha => {
            
-            if (!linha.cells[0] || !linha.cells[1] || !linha.cells[2]) return;
+            if (!linha.cells[0] || !linha.cells[1] || !linha.cells[2] || !linha.cells[3] || !linha.cells[4]) return;
 
             const idLinha = linha.cells[0].textContent.toLowerCase();
             const nomeLinha = linha.cells[1].textContent.toLowerCase();
             const statusLinha = linha.cells[2].textContent.toLowerCase();
+            const tamanhoLinha = linha.cells[4].textContent.toLowerCase();
+            const embalagemLinha = linha.cells[3].textContent.toLowerCase();
 
             const corresponde = 
                 idLinha.includes(idFiltro) &&
                 nomeLinha.includes(nomeFiltro) &&
-                statusLinha.includes(statusFiltro);
+                statusLinha.includes(statusFiltro) &&
+                tamanhoLinha.includes(tamanhoFiltro) &&
+                embalagemLinha.includes(embalagemFiltro);
 
             linha.style.display = corresponde ? '' : 'none';
             if (corresponde) algumaLinhaVisivel = true;

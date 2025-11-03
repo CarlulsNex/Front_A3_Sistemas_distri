@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNÇÕES DA API ---
 
     /**
-     * Busca todos os produtos da API e popula a tabela.
+     * Busca todos os produtos da API para a tabela.
      */
     async function carregarProdutos() {
         try {
@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             produtos.forEach(p => {
                 const tr = document.createElement('tr');
                 tr.dataset.id = p.produtoid;
-                // Adiciona todos os dados como data attributes para fácil acesso
                 Object.keys(p).forEach(key => {
                     tr.dataset[key] = p[key];
                 });
@@ -86,9 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectsDeCategoria = document.querySelectorAll('select[name="categoria"], select[name="editar-categoria"]');
 
             selectsDeCategoria.forEach(select => {
-                select.innerHTML = ''; // Limpa opções antigas
-
-                // Adiciona uma opção padrão/placeholder
+                select.innerHTML = ''; 
                 const placeholder = new Option('Selecione uma categoria...', '');
                 placeholder.disabled = true;
                 placeholder.selected = true;
@@ -96,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 categorias.forEach(cat => {
                     if (cat.status.toUpperCase() === 'ATIVO') {
-                        const option = new Option(cat.nome, cat.nome); // O valor enviado será o nome da categoria
+                        const option = new Option(cat.nome, cat.nome); 
                         select.add(option);
                     }
                 });

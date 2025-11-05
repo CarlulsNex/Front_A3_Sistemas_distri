@@ -156,9 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 nome: nome,
                 editStatus: status,
                 editCategoriaId: editCategoriaId,
-                editTamanho: tamanho,
-                editEmbalagem: embalagem,
-                
+                tamanho: tamanho,
+                embalagem: embalagem,
             }
 
         try {

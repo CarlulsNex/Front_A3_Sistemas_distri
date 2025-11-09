@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // Define as URLs base da sua API.
-    const API_BASE_URL = 'http://127.0.0.1:5000/api';
+    const API_BASE_URL = 'http://127.0.0.1:8080/api';
 
 
     async function carregarDadosDosCards() {

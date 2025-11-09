@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- CONFIGURAÇÕES E SELETORES GLOBAIS ---
-    const API_BASE_URL = 'http://127.0.0.1:5000/api';
+    const API_BASE_URL = 'http://127.0.0.1:8080/api';
 
     // Modais
     const modalAdicionar = document.getElementById('adicionar_produto');
@@ -37,10 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Erro ao buscar produtos da API.');
 
             const produtos = await response.json();
+            const corpoTabela = document.getElementById('corpo-tabela-produtos'); // Mantido do seu código original
+
+            // Se este script estiver sendo usado na página de RELATÓRIOS, use:
+            // const corpoTabela = document.getElementById('corpo-tabela-relatorios'); 
+
             corpoTabela.innerHTML = '';
             const noResultsMessage = document.getElementById('no-results-message');
             if (noResultsMessage) noResultsMessage.style.display = 'none';
-
 
             if (produtos.length === 0) {
                 if (noResultsMessage) noResultsMessage.style.display = 'block';
@@ -49,25 +53,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
             produtos.forEach(p => {
                 const tr = document.createElement('tr');
-                tr.dataset.id = p.produtoid;
+
+                // 💡 CORREÇÃO 1: Usando p.produtoId (CamelCase)
+                tr.dataset.id = p.produtoId;
+
+                // Se a API tiver o objeto categoria, pega o nome, se não, usa 'N/A'.
+                const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
+
+                // 💡 CORREÇÃO 2: Usando p.quantidadeMinima (CamelCase)
+                const quantidadeMinima = p.quantidadeMinima || 0;
+
+                // O mapeamento do dataset será corrigido automaticamente para lowercase: produtoId -> productoid
                 Object.keys(p).forEach(key => {
-                    tr.dataset[key] = p[key];
+                    tr.dataset[key.toLowerCase()] = p[key]; // Mapeamento mais seguro para data-attributes
                 });
 
-                const alertaEstoque = p.quantidade < p.quantidade_minima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
+                // Usando a chave correta para o dataset (p.produtoId)
+                tr.dataset.produtoid = p.produtoId;
+                tr.dataset.quantidademinima = quantidadeMinima;
+
+                // 💡 CORREÇÃO 3: Usando p.quantidadeMinima e p.produtoId no alerta
+                const alertaEstoque = p.quantidade < quantidadeMinima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
 
                 tr.innerHTML = `
-                    <td><p>${p.produtoid}</p></td>
-                    <td>
-                        <p>${p.nome}</p>
-                        <p><i>Estoque disponível:</i> <b><i>${p.quantidade}</i></b></p>
-                        ${alertaEstoque}
-                    </td>
-                    <td><p>${p.nome_categoria || 'N/A'}</p></td>
-                    <td><p>${p.status}</p></td>
-                    <td><p>${p.preco}</P></td>
-                    <td class="hidden-td">${p.quantidade_minima}</td>
-                `;
+                <td><p>${p.produtoId || 'N/A'}</p></td>
+                <td>
+                    <p>${p.nome || 'Produto Sem Nome'}</p>
+                    <p><i>Estoque disponível:</i> <b><i>${p.quantidade || 0}</i></b></p>
+                    ${alertaEstoque}
+                </td>
+                <td><p>${nomeCategoria}</p></td>
+                <td><p>${p.status || 'N/A'}</p></td>
+                <td><p>${p.preco || '0.00'}</P></td>
+                <td class="hidden-td">${quantidadeMinima}</td>
+            `;
                 corpoTabela.appendChild(tr);
             });
         } catch (error) {
@@ -85,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectsDeCategoria = document.querySelectorAll('select[name="categoria"], select[name="editar-categoria"]');
 
             selectsDeCategoria.forEach(select => {
-                select.innerHTML = ''; 
+                select.innerHTML = '';
                 const placeholder = new Option('Selecione uma categoria...', '');
                 placeholder.disabled = true;
                 placeholder.selected = true;
@@ -93,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 categorias.forEach(cat => {
                     if (cat.status.toUpperCase() === 'ATIVO') {
-                        const option = new Option(cat.nome, cat.nome); 
+                        const option = new Option(cat.nome, cat.nome);
                         select.add(option);
                     }
                 });
@@ -162,13 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleFormSubmit(form, url, successMessage, getDados) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const submitter = e.submitter;
             if (submitter && submitter.classList.contains('btn-cancelar')) {
                 fecharModais();
                 return;
             }
-            
+
             const dados = getDados(form);
 
             try {
@@ -182,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) {
                     throw new Error(result.Erro || 'Ocorreu um erro.');
                 }
-                
+
                 fecharModais();
                 mostrarMensagem(result.Mensagem || successMessage, 'ok');
                 carregarProdutos();
@@ -210,9 +229,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function mostrarMensagem(mensagem, tipo = 'alerta') {
         const container = document.getElementById('mensagem_resultado');
         const conteudo = document.getElementById('mensagem_resultado_conteudo');
-        
+
         let tipoClasse = '';
-        switch(tipo) {
+        switch (tipo) {
             case 'ok':
                 tipoClasse = 'resultado_ok';
                 break;
@@ -259,14 +278,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     inputsFiltro.forEach(input => input.addEventListener('input', filtrarTabela));
 
-    // --- INICIALIZAÇÃO ---
-    handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucesso!', (form) => ({
-        nome: form.nome.value,
-        status: form.status.value,
-        categoria: form.categoria.value,
-        preco: form.preco.value,
-        qnt_min: form.qnt_min.value
-    }));
+   // O campo 'quantidadeMinima' agora corresponde no HTML e na API!
+handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucesso!', (form) => ({
+    nome: form.nome.value,
+    
+    // Converte status para minúsculo, conforme o objeto de exemplo da API
+    status: form.status.value.toLowerCase(), 
+
+    // Mapeamento e Conversão para Número:
+    // O valor do SELECT (categoria) DEVE ser o ID (ex: "18"). 
+    // Se for uma string vazia (""), resultará em NaN (que pode virar null).
+    categoriaId: parseInt(form.categoria.value, 10), 
+
+    // Conversão para número decimal
+    preco: parseFloat(form.preco.value), 
+    
+    // O nome do campo agora é o mesmo da API! Conversão para inteiro
+    quantidadeMinima: parseInt(form.quantidadeMinima.value, 10)
+}));
 
     handleFormSubmit(formEditar, '/produto/editar', 'Produto editado com sucesso!', (form) => ({
         produtoid: form['editar-produtoid'].value,
@@ -278,11 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
 
     handleFormSubmit(formMover, '/produto/mover', 'Estoque atualizado com sucesso!', (form) => ({
-       produtoid: form['mover-produtoid'].value,
-       tipo: form['tipo-mover'].value,
-       quantidade: form['quantidade-mover'].value
+        produtoid: form['mover-produtoid'].value,
+        tipo: form['tipo-mover'].value,
+        quantidade: form['quantidade-mover'].value
     }));
-    
+
     handleFormSubmit(formAlterarStatus, '/produto/alterar_status', 'Status do produto alterado com sucesso!', (form) => ({
         produtoid: form['alterar_Status_selecionado'].value
     }));

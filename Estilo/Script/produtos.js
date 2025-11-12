@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Usando a chave correta para o dataset (p.produtoId)
-                tr.dataset.produtoid = p.produtoId;
+                tr.dataset.produtoId = p.produtoId;
                 tr.dataset.quantidademinima = quantidadeMinima;
 
                 // 💡 CORREÇÃO 3: Usando p.quantidadeMinima e p.produtoId no alerta
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
 
         const data = selectedRow.dataset;
-        document.getElementById('editar-produtoid').value = data.produtoid;
+        document.getElementById('editar-produtoId').value = data.produtoId;
         document.getElementById('editar-nome').value = data.nome;
         document.getElementById('editar-status').value = data.status;
         document.getElementById('editar-categoria').value = data.categoria_id;
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedRow.dataset.status.toUpperCase() === 'INATIVO') {
             return mostrarMensagem('Produto inativo não pode ser movimentado.', 'alerta');
         }
-        document.getElementById('mover-produtoid').value = selectedRow.dataset.produtoid;
+        document.getElementById('mover-produtoId').value = selectedRow.dataset.produtoId;
         abrirModal(modalMover);
     };
 
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = selectedRow.dataset;
         const novoStatus = data.status.toUpperCase() === 'ATIVO' ? 'Inativo' : 'Ativo';
 
-        document.getElementById('alterar_Status_selecionado').value = data.produtoid;
+        document.getElementById('alterar_Status_selecionado').value = data.produtoId;
         document.getElementById('nomeProduto').textContent = data.nome;
         document.getElementById('statusNovo').textContent = novoStatus;
 
@@ -298,7 +298,7 @@ handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucess
 }));
 
     handleFormSubmit(formEditar, '/produto/editar', 'Produto editado com sucesso!', (form) => ({
-        produtoid: form['editar-produtoid'].value,
+        produtoId: form['editar-produtoId'].value,
         nome: form['editar-nome'].value,
         status: form['editar-status'].value,
         categoria: form['editar-categoria'].value,
@@ -307,13 +307,13 @@ handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucess
     }));
 
     handleFormSubmit(formMover, '/produto/mover', 'Estoque atualizado com sucesso!', (form) => ({
-        produtoid: form['mover-produtoid'].value,
+        produtoId: form['mover-produtoId'].value,
         tipo: form['tipo-mover'].value,
         quantidade: form['quantidade-mover'].value
     }));
 
     handleFormSubmit(formAlterarStatus, '/produto/alterar_status', 'Status do produto alterado com sucesso!', (form) => ({
-        produtoid: form['alterar_Status_selecionado'].value
+        produtoId: form['alterar_Status_selecionado'].value
     }));
 
     carregarOpcoesDeCategoria();

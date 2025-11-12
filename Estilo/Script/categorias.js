@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnInativar = document.getElementById("inativar_categoria");
     const btnsCancelar = document.querySelectorAll('.btn-cancelar');
 
+    // Flags para evitar múltiplas submissões
+    let isSubmittingAdicionar = false;
+    let isSubmittingEditar = false;
+    let isSubmittingAlterarStatus = false;
+
     // Tabela
     const corpoTabela = document.getElementById('corpo-tabela-categorias');
     let selectedRow = null;
@@ -115,13 +120,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Adicionar Categoria (SUBMIT)
     formAdicionar.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        
+        if (isSubmittingAdicionar) return;
+        isSubmittingAdicionar = true;
+        
+        
+        const submitBtn = formAdicionar.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Processando...';
+        
         const formData = new FormData(formAdicionar);
         formData.append('tamanho', document.getElementById('Modal_editar_tamanho').value);
         formData.append('embalagem', document.getElementById('Modal_editar_embalagem').value);
         const dados = Object.fromEntries(formData.entries());
-        console.log('Dados que serão enviados para a API:', dados);
 
-        console.log('Dados que serão enviados para a API:', dados);
         try {
             const response = await fetch(`${API_BASE_URL}/categoria/criar`, {
                 method: 'POST',
@@ -140,12 +154,28 @@ document.addEventListener('DOMContentLoaded', () => {
             formAdicionar.reset();
         } catch (error) {
             mostrarMensagem(error.message, 'erro');
+        } finally {
+            
+            isSubmittingAdicionar = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
         }
     });
 
     // Editar Categoria (SUBMIT)
     formEditar.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        
+        if (isSubmittingEditar) return;
+        isSubmittingEditar = true;
+        
+        
+        const submitBtn = formEditar.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Processando...';
+        
         const editCategoriaId = document.getElementById('categoriaid').value;
         const nome= document.getElementById('editar-nome').value;
         const status= document.getElementById('editar-status').value;
@@ -156,8 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 nome: nome,
                 editStatus: status,
                 editCategoriaId: editCategoriaId,
-                editTamanho: tamanho,
-                editEmbalagem: embalagem,
+                tamanho: tamanho,
+                embalagem: embalagem,
                 
             }
 
@@ -182,12 +212,28 @@ document.addEventListener('DOMContentLoaded', () => {
             carregarCategorias();
         } catch (error) {
             mostrarMensagem(error.message, 'erro');
+        } finally {
+            
+            isSubmittingEditar = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
         }
     });
 
     // Alterar Status (SUBMIT)
     formAlterarStatus.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        
+        if (isSubmittingAlterarStatus) return;
+        isSubmittingAlterarStatus = true;
+        
+       
+        const submitBtn = formAlterarStatus.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Processando...';
+        
         const categoriaid = document.getElementById('categoriaid').value;
         const status = document.getElementById('alterar_status_novo_status').value;
 
@@ -218,7 +264,12 @@ document.addEventListener('DOMContentLoaded', () => {
             carregarCategorias();
         } catch (error) {
              mostrarMensagem(error.message, 'erro');
-        }  
+        } finally {
+            
+            isSubmittingAlterarStatus = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
     });
 
     // --- FUNÇÕES AUXILIARES ---

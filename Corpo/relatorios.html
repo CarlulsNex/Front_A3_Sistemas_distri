@@ -55,50 +55,13 @@
                 <div class="filtro-grupo">
                     <label for="report-select">Tipo de Relatório:</label>
                     <select id="report-select" class="filtro-grupo select">
-                        <option value="">-- Selecione um relatório --</option>
-                        <option value="movimentos">Relatório de Movimentações</option>
+                        <option value="">Selecione um relatório</option>
                         <option value="lista-precos">Lista de Preços</option>
                         <option value="balanco">Balanço Físico/Financeiro</option>
                         <option value="estoque-baixo">Produtos com Estoque Baixo</option>
                         <option value="produtos-por-categoria">Produtos por Categoria</option>
                         <option value="top-movimentos">Produtos Mais Movimentados</option>
                     </select>
-                </div>
-
-                <div id="filtros-movimentos" style="display: none; width: 100%; display: contents;">
-                    <div class="filtro-grupo" id="pesquisa_DataInicial">
-                        <label for="data-inicial"><span>*</span> Data inicial:</label>
-                        <input id="data-inicial" type="date" />
-                    </div>
-                    <div class="filtro-grupo" id="pesquisa_DataFinal">
-                        <label for="data-final"><span>*</span> Data final:</label>
-                        <input id="data-final" type="date" />
-                    </div>
-                    <div class="filtro-grupo" id="pesquisa_SeletorCategoria">
-                        <label for="filtro-categoria">Categoria:</label>
-                        <input id="filtro-categoria" type="text" placeholder="Filtrar por categoria" />
-                    </div>
-                    <div class="filtro-grupo" id="pesquisa_SeletorProduto">
-                        <label for="filtro-produto">Produto:</label>
-                        <input id="filtro-produto" type="text" placeholder="Filtrar por produto" />
-                    </div>
-                    <div class="filtro-grupo" id="pesquisa_SeletorID">
-                        <label for="filtro-id">ID do Produto:</label>
-                        <input id="filtro-id" type="text" placeholder="Filtrar por ID" />
-                    </div>
-                    <div class="filtro-grupo">
-                        <label>Ordenar por Quantidade (Movimentações):</label>
-                        <div class="radio-group">
-                            <div id="pesquisa_RadioMaiorSaida">
-                                <input type="radio" id="maior" name="ordenar" value="maior">
-                                <label for="maior">Maior para o menor</label>
-                            </div>
-                            <div id="pesquisa_RadioMenorSaida">
-                                <input type="radio" id="menor" name="ordenar" value="menor">
-                                <label for="menor">Menor para o maior</label>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="filtro-grupo">

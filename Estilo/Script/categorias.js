@@ -119,9 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('tamanho', document.getElementById('Modal_editar_tamanho').value);
         formData.append('embalagem', document.getElementById('Modal_editar_embalagem').value);
         const dados = Object.fromEntries(formData.entries());
-        console.log('Dados que serão enviados para a API:', dados);
 
-        console.log('Dados que serão enviados para a API:', dados);
         try {
             const response = await fetch(`${API_BASE_URL}/categoria/criar`, {
                 method: 'POST',

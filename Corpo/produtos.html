@@ -144,33 +144,36 @@
             <div class="infos">
                 <div class="infos-1">
                     <div class="novos-dados">
-                        <label for="nome">Nome:</label><br />
-                        <input type="text" id="nome" name="nome" required /><br /><br />
+                        <label for="Modal_editar_nome">Nome:</label><br />
+                        <input type="text" id="Modal_editar_nome" class="editar-nome" name="nome" required /><br /><br />
                     </div>
                     <div class="novos-dados">
                         <label for="status">Status:</label><br />
-                        <select name="status" id="status">
+                        <select class="editar-status" name="status" id="status">
                             <option value="ATIVO" selected>Ativo</option>
                             <option value="INATIVO">Inativo</option>
                         </select>
                     </div>
                 </div>
+                <br>
                 <div class="infos-2">
                     <div class="novos-dados">
                         <label for="categoria">Categoria:</label><br />
-                        <select name="categoria" id="categoria" required>
+                        <select name="categoria" id="categoria" class="editar-status" required>
                             <option value="" disabled selected>
                                 Selecione uma categoria
                             </option>
                             </select>
                     </div>
+                    <br>
                     <div class="novos-dados">
                         <label for="preco">Preço:</label><br />
                         <input
                             type="number" 
                             id="preco"
                             name="preco"
-                            step="0.01" 
+                            step="0.01"
+                            class="editar-status" 
                             required
                         /><br /><br />
                     </div>
@@ -182,6 +185,7 @@
                             type="number"
                             id="quantidadeMinima"
                             name="quantidadeMinima" 
+                            class="editar-status"
                             required
                         /><br /><br />
                     </div>
@@ -212,12 +216,13 @@
                   type="text"
                   id="editar-nome"
                   name="editar-nome"
+                  class="editar-nome"
                   required
                 /><br /><br />
               </div>
               <div class="novos-dados">
                 <label for="editar-status">Status:</label><br />
-                <select name="editar-status" id="editar-status">
+                <select name="editar-status" id="editar-status" class="editar-status">
                   <option value="ATIVO">Ativo</option>
                   <option value="INATIVO">Inativo</option>
                 </select>
@@ -226,7 +231,7 @@
             <div class="infos-2">
               <div class="novos-dados">
                 <label for="editar-categoria">Categoria:</label><br />
-                <select name="editar-categoria" id="editar-categoria" required>
+                <select name="editar-categoria" class="editar-status" id="editar-categoria" required>
                   <option value="" disabled>
                     Nenhum registro encontrado
                   </option></select
@@ -238,6 +243,7 @@
                   type="text"
                   id="editar-preco"
                   name="editar-preco"
+                  class="editar-nome"
                   required
                 /><br /><br />
               </div>
@@ -249,6 +255,7 @@
                   type="number"
                   id="editar-qnt_min"
                   name="editar-qnt_min"
+                  class="editar-nome"
                   required
                 /><br /><br />
               </div>
@@ -266,44 +273,45 @@
       </div>
     </div>
 
-    <div id="mover_produto" class="modal">
-      <div class="modal-conteudo">
-        <h2>Movimentação de Produto</h2>
-        <form id="Form-mover-produto">
-          <input type="hidden" id="mover-produtoid" name="mover-produtoid" />
-          <div class="infos">
-            <div class="infos-1">
-              <div class="novos-dados">
-                <label for="tipo-mover">Tipo de movimentação:</label><br />
-                <select name="tipo-mover" id="tipo-mover">
-                  <option value="Entrada" selected>Entrada</option>
-                  <option value="Saida">Saída</option>
-                </select>
-              </div>
-              <div class="novos-dados">
-                <label for="quantidade-mover">Quantidade:</label><br />
-                <input
-                  type="number"
-                  id="quantidade-mover"
-                  name="quantidade-mover"
-                  value="0"
-                  min="1"
-                  required
-                /><br /><br />
-              </div>
-            </div>
+ <div id="mover_produto" class="modal"> 
+  <div class="modal-conteudo">
+    <h2>Movimentação de Produto</h2>
+    <form id="Form-mover-produto">
+      
+      <input type="hidden" id="mover-produtoId" name="produtoId" />
+
+      <div class="infos">
+        <div class="infos-1">
+          <div class="novos-dados">
+            <label for="tipo-mover">Tipo de movimentação:</label><br />
+            <select name="tipo" id="tipo-mover" class="editar-status">
+              <option value="ENTRADA" selected>Entrada</option>
+              <option value="SAIDA">Saída</option>
+            </select>
           </div>
-          <div class="botoes-decisao-box">
-            <button type="button" class="btn-decisao btn-cancelar">
-              Cancelar
-            </button>
-            <button type="submit" class="btn-decisao btn-confirmar">
-              Confirmar
-            </button>
+          <div class="novos-dados">
+            <label for="quantidade-mover">Quantidade:</label><br />
+            <input
+              type="number"
+              id="quantidade-mover"
+              name="quantidade"
+              value=""
+              min="1"
+              class="editar-nome"
+              required
+            /><br /><br />
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+      
+      <div class="botoes-decisao-box">
+         <button type="button" class="btn-decisao btn-cancelar">Cancelar</button>
+         <button type="submit" class="btn-decisao btn-confirmar">Salvar</button>
+      </div>
+
+    </form>
+  </div>
+</div>
 
     <div id="alterar_Status" class="modal">
       <div class="modal-conteudo" id="modal-conteudo_alterar_Status">

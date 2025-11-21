@@ -151,11 +151,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnMovimentar.onclick = () => {
         if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
-        if (selectedRow.dataset.status.toUpperCase() === 'INATIVO') {
+
+
+        const statusProduto = selectedRow.dataset.status ? selectedRow.dataset.status.toUpperCase() : '';
+
+        if (statusProduto === 'INATIVO') {
             return mostrarMensagem('Produto inativo não pode ser movimentado.', 'alerta');
         }
-        document.getElementById('mover-produtoId').value = selectedRow.dataset.produtoId;
-        abrirModal(modalMover);
+        
+        
+        const inputId = document.getElementById('mover-produtoId');
+        if (inputId) {
+            inputId.value = selectedRow.dataset.produtoId;
+            abrirModal(modalMover);
+        } else {
+            console.error("Elemento 'mover-produtoId' não encontrado no HTML!");
+            mostrarMensagem("Erro interno: formulário incompleto.", 'erro');
+        }
     };
 
     btnAlterarStatus.onclick = () => {
@@ -306,7 +318,7 @@ handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucess
         qnt_min: form['editar-qnt_min'].value
     }));
 
-    handleFormSubmit(formMover, '/produto/mover', 'Estoque atualizado com sucesso!', (form) => ({
+    handleFormSubmit(formMover, '/produtos/movimentar-estoque', 'Estoque atualizado com sucesso!', (form) => ({
         produtoId: form['mover-produtoId'].value,
         tipo: form['tipo-mover'].value,
         quantidade: form['quantidade-mover'].value
@@ -315,6 +327,27 @@ handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucess
     handleFormSubmit(formAlterarStatus, '/produto/alterar_status', 'Status do produto alterado com sucesso!', (form) => ({
         produtoId: form['alterar_Status_selecionado'].value
     }));
+
+    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
+    const containerMensagem = document.createElement('div');
+    containerMensagem.className = `mensagem-popup ${tipo}`;
+    containerMensagem.textContent = mensagem;
+
+    document.body.appendChild(containerMensagem);
+
+    
+    setTimeout(() => {
+        containerMensagem.classList.add('visivel');
+    }, 10);
+
+   
+    setTimeout(() => {
+        containerMensagem.classList.remove('visivel');
+        setTimeout(() => {
+            containerMensagem.remove();
+        }, 500);
+    }, 3000);
+}
 
     carregarOpcoesDeCategoria();
     carregarProdutos();

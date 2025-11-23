@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 categorias.forEach(cat => {
                     if (cat.status.toUpperCase() === 'ATIVO') {
-                        const option = new Option(cat.nome, cat.nome);
+                        const option = new Option(cat.nome, cat.categoriaid);
                         select.add(option);
                     }
                 });

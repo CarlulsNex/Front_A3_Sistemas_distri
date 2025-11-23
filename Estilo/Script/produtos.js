@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 categorias.forEach(cat => {
                     if (cat.status.toUpperCase() === 'ATIVO') {
-                        const option = new Option(cat.nome, cat.nome);
+                        const option = new Option(cat.nome, cat.categoriaid);
                         select.add(option);
                     }
                 });
@@ -142,9 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('editar-produtoId').value = data.produtoId;
         document.getElementById('editar-nome').value = data.nome;
         document.getElementById('editar-status').value = data.status;
-        document.getElementById('editar-categoria').value = data.categoria_id;
+        document.getElementById('editar-categoria').value = data.categoriaId;
         document.getElementById('editar-preco').value = data.preco;
-        document.getElementById('editar-qnt_min').value = data.quantidade_minima;
+        document.getElementById('editar-quantidadeMinima').value = data.quantidadeMinima;
 
         abrirModal(modalEditar);
     };
@@ -191,39 +191,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Lógica de Submissão de Formulários
     async function handleFormSubmit(form, url, successMessage, getDados) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            const submitter = e.submitter;
-            if (submitter && submitter.classList.contains('btn-cancelar')) {
-                fecharModais();
-                return;
-            }
+        const submitter = e.submitter;
+        if (submitter && submitter.classList.contains('btn-cancelar')) {
+            fecharModais();
+            return;
+        }
 
-            const dados = getDados(form);
+        const dados = getDados(form);
 
-            try {
+        try {
                 const response = await fetch(`${API_BASE_URL}${url}`, {
-                    method: 'POST',
+                method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dados)
-                });
+            });
 
                 const result = await response.json();
-                if (!response.ok) {
+            if (!response.ok) {
                     throw new Error(result.Erro || 'Ocorreu um erro.');
-                }
+            }
 
-                fecharModais();
+            fecharModais();
                 mostrarMensagem(result.Mensagem || successMessage, 'ok');
                 carregarProdutos();
                 form.reset();
 
-            } catch (error) {
+        } catch (error) {
                 mostrarMensagem(error.message, 'erro');
-            }
-        });
-    }
+        }
+    });
+}
 
     // --- FUNÇÕES AUXILIARES E EVENTOS ---
 
@@ -315,8 +315,9 @@ handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucess
         status: form['editar-status'].value,
         categoria: form['editar-categoria'].value,
         preco: form['editar-preco'].value,
-        qnt_min: form['editar-qnt_min'].value
-    }));
+        quantidadeMinima: form['editar-quantidadeMinima'].value
+    })
+);
 
     handleFormSubmit(formMover, '/produtos/movimentar-estoque', 'Estoque atualizado com sucesso!', (form) => ({
         produtoId: form['mover-produtoId'].value,
@@ -351,4 +352,27 @@ handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucess
 
     carregarOpcoesDeCategoria();
     carregarProdutos();
+
+
+        //Mostrar mensagem 
+    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
+    const containerMensagem = document.createElement('div');
+    containerMensagem.className = `mensagem-popup ${tipo}`;
+    containerMensagem.textContent = mensagem;
+
+    document.body.appendChild(containerMensagem);
+
+    
+    setTimeout(() => {
+        containerMensagem.classList.add('visivel');
+    }, 10);
+
+   
+    setTimeout(() => {
+        containerMensagem.classList.remove('visivel');
+        setTimeout(() => {
+            containerMensagem.remove();
+        }, 500);
+    }, 3000);
+}
 });

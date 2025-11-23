@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
 
         const data = selectedRow.dataset;
-        document.getElementById('editar-produtoId').value = data.produtoId;
+        //document.getElementById('editar-produtoId').value = data.produtoId;
         document.getElementById('editar-nome').value = data.nome;
         document.getElementById('editar-status').value = data.status;
         document.getElementById('editar-categoria').value = data.categoriaId;
@@ -310,7 +310,7 @@ handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucess
 }));
 
     handleFormSubmit(formEditar, '/produto/editar', 'Produto editado com sucesso!', (form) => ({
-        produtoId: form['editar-produtoId'].value,
+        // produtoId: form['editar-produtoId'].value,
         nome: form['editar-nome'].value,
         status: form['editar-status'].value,
         categoria: form['editar-categoria'].value,

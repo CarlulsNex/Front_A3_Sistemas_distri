@@ -319,4 +319,27 @@ handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucess
 
     carregarOpcoesDeCategoria();
     carregarProdutos();
+
+
+        //Mostrar mensagem 
+    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
+    const containerMensagem = document.createElement('div');
+    containerMensagem.className = `mensagem-popup ${tipo}`;
+    containerMensagem.textContent = mensagem;
+
+    document.body.appendChild(containerMensagem);
+
+    
+    setTimeout(() => {
+        containerMensagem.classList.add('visivel');
+    }, 10);
+
+   
+    setTimeout(() => {
+        containerMensagem.classList.remove('visivel');
+        setTimeout(() => {
+            containerMensagem.remove();
+        }, 500);
+    }, 3000);
+}
 });

@@ -203,7 +203,7 @@
       <div class="modal-conteudo">
         <h2>Editar Produto</h2>
         <form id="Form-editar-produto">
-          <input type="hidden" id="editar-produtoId" name="editar-produtoId" />
+          <input type="hidden" id="editar-produtoid" name="editar-produtoid" />
           <div class="infos">
             <div class="infos-1">
               <div class="novos-dados">
@@ -244,11 +244,11 @@
             </div>
             <div class="infos-3">
               <div class="novos-dados">
-                <label for="editar-quantidadeMinima">Quantidade Mínima:</label><br />
+                <label for="editar-qnt_min">Quantidade Mínima:</label><br />
                 <input
                   type="number"
-                  id="editar-quantidadeMinima"
-                  name="editar-quantidadeMinima"
+                  id="editar-qnt_min"
+                  name="editar-qnt_min"
                   required
                 /><br /><br />
               </div>
@@ -270,7 +270,7 @@
       <div class="modal-conteudo">
         <h2>Movimentação de Produto</h2>
         <form id="Form-mover-produto">
-          <input type="hidden" id="mover-produtoId" name="mover-produtoId" />
+          <input type="hidden" id="mover-produtoid" name="mover-produtoid" />
           <div class="infos">
             <div class="infos-1">
               <div class="novos-dados">
@@ -309,8 +309,11 @@
       <div class="modal-conteudo" id="modal-conteudo_alterar_Status">
         <h2>Alteração de Status</h2>
         <form id="Form-alterar_Status">
-           <input type="hidden" id="alterar_Status_selecionado"/>
-           <input type="hidden" type="hidden" name="alterar_Status_selecionado"/>
+          <input
+            type="hidden"
+            id="alterar_Status_selecionado"
+            name="alterar_Status_selecionado"
+          />
           <div class="infos">
             <p>
               Deseja tornar o produto <b id="nomeProduto"></b>
@@ -330,8 +333,13 @@
     </div>
 
     <div id="mensagem_resultado" class="modal">
-      <div id="mensagem_resultado_conteudo"></div>
+        <div id="mensagem_resultado_conteudo">
+            <div class="mensagem" id="resultado_ok"><p></p></div>
+            <div class="mensagem" id="resultado_erro"><p></p></div>
+            <div class="mensagem" id="alerta"><p></p></div>
+        </div>
     </div>
+
     <script type="text/javascript" src="../Estilo/Script/produtos.js"></script>
   </body>
 </html>

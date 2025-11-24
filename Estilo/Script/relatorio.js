@@ -241,19 +241,46 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
     function renderTabelarecentes(data) {
-        const headers = ['Produto','Categoria','Tipo','Quantidade','Data'];
-        tableHead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+        
+    const headers = ['Produto', 'Categoria', 'Tipo', 'Quantidade', 'Data'];
+    tableHead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+    
+    // 1. Verifica se há dados
+    if (!data || data.length === 0) {
+        setTableMessage('Nenhuma movimentação recente encontrada.', true);
+        return;
+    }
 
-        const rowsHtml = data.map(p => `
-            <tr">
+    // 2. Cria as linhas da tabela
+    const rowsHtml = data.map(p => {
+        // Formatação da Data
+        const dataObj = new Date(p.data);
+        const dataFormatada = isNaN(dataObj) ? 'Data Inválida' : dataObj.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        // Estilo e Texto do Tipo
+        const isEntrada = p.tipo === 'ENTRADA';
+        const tipoTexto = isEntrada ? 'Entrada' : 'Saída';
+        
+
+        return `
+            <tr>
                 <td>${p.nomeProduto || "---"}</td>
                 <td>${p.nomeCategoria || "---"}</td>
-                <td>${p.tipo || "---"}</td>
+                <td>${tipoTexto}</td>
                 <td>${p.quantidade || "---"}</td>
-                <td>${p.data || "---"}</td>
+                <td>${dataFormatada}</td>
             </tr>
-        `).join('');
-        tableBody.innerHTML = rowsHtml;
+        `;
+    }).join('');
+
+   
+    tableBody.innerHTML = rowsHtml;
     }
 
     // --- FUNÇÕES AUXILIARES ---

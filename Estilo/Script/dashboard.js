@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
        
-            const recentes = movimentacoes.slice(0, 40);
+            const recentes = movimentacoes.slice(0, 10);
 
             recentes.forEach(mov => {
                 const linha = document.createElement('tr');

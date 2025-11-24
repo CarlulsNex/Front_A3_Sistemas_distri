@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- CONFIGURAÇÕES E SELETORES GLOBAIS ---
+    // CONFIGURAÇÕES E SELETORES GLOBAIS
     const API_BASE_URL = 'http://127.0.0.1:8080/api';
 
     // Modais
@@ -26,8 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputsFiltro = document.querySelectorAll('.pesquisa input');
     let selectedRow = null;
 
-    // --- FUNÇÕES DA API ---
-
     /**
      * Busca todos os produtos da API para a tabela.
      */
@@ -37,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Erro ao buscar produtos da API.');
 
             const produtos = await response.json();
-            const corpoTabela = document.getElementById('corpo-tabela-produtos'); 
+            const corpoTabela = document.getElementById('corpo-tabela-produtos');
 
 
             corpoTabela.innerHTML = '';
@@ -52,17 +50,17 @@ document.addEventListener('DOMContentLoaded', () => {
             produtos.forEach(p => {
                 const tr = document.createElement('tr');
                 tr.dataset.id = p.produtoId;
-                
+
                 const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
                 const quantidadeMinima = p.quantidadeMinima || 0;
 
-           
+
                 Object.keys(p).forEach(key => {
-                    tr.dataset[key.toLowerCase()] = p[key]; 
+                    tr.dataset[key.toLowerCase()] = p[key];
                 });
 
                 tr.dataset.produtoId = p.produtoId;
-                tr.dataset.quantidademinima = quantidadeMinima;
+                tr.dataset.quantidadeMinima = quantidadeMinima;
                 const alertaEstoque = p.quantidade < quantidadeMinima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
 
                 tr.innerHTML = `
@@ -115,14 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- LÓGICA DOS MODAIS E FORMULÁRIOS ---
+    // LÓGICA DOS MODAIS E FORMULÁRIOS
 
     const abrirModal = (modal) => modal.style.display = 'flex';
     const fecharModais = () => {
         document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
     };
 
-    //Logica de edição do produto
+    // Logica de edição do produto
     // Abrir Modais
     btnAdd.onclick = () => abrirModal(modalAdicionar);
 
@@ -173,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const inputHidden = document.getElementById('input_novo_status');
         if(inputHidden) inputHidden.value = novoStatus; 
 
-        
+
 
         abrirModal(modalAlterarStatus);
     };
@@ -220,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- FUNÇÕES AUXILIARES E EVENTOS ---
+    // FUNÇÕES AUXILIARES E EVENTOS
 
     // Selecionar linha da tabela
     corpoTabela.addEventListener('click', (e) => {
@@ -288,10 +286,10 @@ document.addEventListener('DOMContentLoaded', () => {
     handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucesso!', (form) => ({
         nome: form.nome.value,
 
-        
+
         status: form.status.value.toLowerCase(),
 
-        
+
         categoriaId: parseInt(form.categoria.value, 10),
         preco: parseFloat(form.preco.value),
         quantidadeMinima: parseInt(form.quantidadeMinima.value, 10)
@@ -314,12 +312,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
 
 
-        handleFormSubmit(formAlterarStatus, '/produtos/status', 'Status do produto alterado com sucesso!', (form) => ({
+    handleFormSubmit(formAlterarStatus, '/produtos/status', 'Status do produto alterado com sucesso!', (form) => ({
         produtoId: form['alterar_Status_selecionado'].value,
-        status: form['novo-status'].value 
+        status: form['novo-status'].value
     }));
 
-    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
+    function mostrarMensagem(mensagem, tipo = 'info') {
         const containerMensagem = document.createElement('div');
         containerMensagem.className = `mensagem-popup ${tipo}`;
         containerMensagem.textContent = mensagem;

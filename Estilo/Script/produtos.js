@@ -50,37 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
             produtos.forEach(p => {
                 const tr = document.createElement('tr');
                 tr.dataset.id = p.produtoId;
-<<<<<<< HEAD
                 
                const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
-=======
-
-                const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
->>>>>>> 3eb8fd45d385df0f287830b4bff66a8ef854c93e
                 const quantidadeMinima = p.quantidadeMinima || 0;
                 const idCategoria = p.categoriaId || (p.categoria ? p.categoria.categoriaid : '') || (p.categoria ? p.categoria.id : '');
 
-<<<<<<< HEAD
-                // Preenche o dataset automático
                 Object.keys(p).forEach(key => {
                     if (typeof p[key] !== 'object') {
                         tr.dataset[key.toLowerCase()] = p[key];
                     }
-=======
-
-                Object.keys(p).forEach(key => {
-                    tr.dataset[key.toLowerCase()] = p[key];
->>>>>>> 3eb8fd45d385df0f287830b4bff66a8ef854c93e
                 });
 
                 
                 tr.dataset.produtoId = p.produtoId;
-<<<<<<< HEAD
                 tr.dataset.quantidademinima = quantidadeMinima;
-                tr.dataset.categoriaId = idCategoria; // <--- O PULO DO GATO ESTÁ AQUI
-=======
-                tr.dataset.quantidadeMinima = quantidadeMinima;
->>>>>>> 3eb8fd45d385df0f287830b4bff66a8ef854c93e
+                tr.dataset.categoriaId = idCategoria; 
                 const alertaEstoque = p.quantidade < quantidadeMinima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
 
                 tr.innerHTML = `

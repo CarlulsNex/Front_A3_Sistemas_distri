@@ -62,6 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     data = await fetchData(`${API_BASE_URL}/produtoMaisMovimentado`);
                     renderTopMovimentosTable(data);
                     break;
+                case 'movimentos-recentes':
+                    data = await fetchData(`http://127.0.0.1:8080/api/resumo/movimentacoes`);
+                    renderTabelarecentes(data);
+                    break;
                 default:
                     setTableMessage('Tipo de relatório inválido.');
             }
@@ -235,6 +239,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tableBody.innerHTML = rowsHtml;
 }
+
+    function renderTabelarecentes(data) {
+        const headers = ['Produto','Categoria','Tipo','Quantidade','Data'];
+        tableHead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+
+        const rowsHtml = data.map(p => `
+            <tr">
+                <td>${p.nomeProduto || "---"}</td>
+                <td>${p.nomeCategoria || "---"}</td>
+                <td>${p.tipo || "---"}</td>
+                <td>${p.quantidade || "---"}</td>
+                <td>${p.data || "---"}</td>
+            </tr>
+        `).join('');
+        tableBody.innerHTML = rowsHtml;
+    }
 
     // --- FUNÇÕES AUXILIARES ---
 

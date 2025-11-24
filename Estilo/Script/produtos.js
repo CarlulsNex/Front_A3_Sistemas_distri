@@ -53,16 +53,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tr = document.createElement('tr');
                 tr.dataset.id = p.produtoId;
                 
-                const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
+               const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
                 const quantidadeMinima = p.quantidadeMinima || 0;
+                const idCategoria = p.categoriaId || (p.categoria ? p.categoria.categoriaid : '') || (p.categoria ? p.categoria.id : '');
 
-           
+                // Preenche o dataset automático
                 Object.keys(p).forEach(key => {
-                    tr.dataset[key.toLowerCase()] = p[key]; 
+                    if (typeof p[key] !== 'object') {
+                        tr.dataset[key.toLowerCase()] = p[key];
+                    }
                 });
 
+                
                 tr.dataset.produtoId = p.produtoId;
                 tr.dataset.quantidademinima = quantidadeMinima;
+                tr.dataset.categoriaId = idCategoria; // <--- O PULO DO GATO ESTÁ AQUI
                 const alertaEstoque = p.quantidade < quantidadeMinima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
 
                 tr.innerHTML = `
@@ -132,10 +137,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = selectedRow.dataset;
         document.getElementById('editar-produtoId').value = data.produtoId;
         document.getElementById('editar-nome').value = data.nome;
-        document.getElementById('editar-status').value = data.status;
-        document.getElementById('editar-categoria').value = data.categoriaId;
+
+        document.getElementById('editar-status').value = data.status ? data.status.toUpperCase() : 'ATIVO'; 
+
+        document.getElementById('editar-categoria').value = data.categoriaId; 
+
         document.getElementById('editar-preco').value = data.preco;
-        document.getElementById('editar-quantidadeMinima').value = data.quantidadeMinima;
+        document.getElementById('editar-quantidadeMinima').value = data.quantidademinima; // Note que dataset converte para lowercase, então use 'quantidademinima'
 
         abrirModal(modalEditar);
     };

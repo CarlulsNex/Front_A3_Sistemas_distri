@@ -1,12 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- CONFIGURAÇÕES E SELETORES GLOBAIS ---
-    const API_BASE_URL = 'http://3.12.148.73:8080/api';
+    // --- CONFIGURAÇÕES GLOBAIS ---
+    
+    // ATENÇÃO: Atualize este link sempre que reiniciar o Ngrok
+    const API_BASE_URL = 'https://beb44801ba22.ngrok-free.app/api';
+
+    // Headers padrão para o Ngrok e JSON
+    const headersPadrao = {
+        "ngrok-skip-browser-warning": "true",
+        "Content-Type": "application/json"
+    };
 
     // Modais
     const modalAdicionar = document.getElementById('adicionar_categoria');
     const modalEditar = document.getElementById('editar_categoria');
     const modalAlterarStatus = document.getElementById('alterar_Status');
-
 
     // Formulários
     const formAdicionar = document.getElementById('Form-adiciona-categoria');
@@ -19,23 +26,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnInativar = document.getElementById("inativar_categoria");
     const btnsCancelar = document.querySelectorAll('.btn-cancelar');
 
-    // Flags para evitar múltiplas submissões
+    // Flags
     let isSubmittingAdicionar = false;
     let isSubmittingEditar = false;
     let isSubmittingAlterarStatus = false;
 
-    // Tabela
     const corpoTabela = document.getElementById('corpo-tabela-categorias');
     let selectedRow = null;
 
     // --- FUNÇÕES DA API ---
 
-    /**
-     * Busca todas as categorias da API e popula a tabela.
-     */
     async function carregarCategorias() {
         try {
-            const response = await fetch(`${API_BASE_URL}/categorias`);
+            // Adicionado headers aqui
+            const response = await fetch(`${API_BASE_URL}/categorias`, {
+                method: 'GET',
+                headers: headersPadrao
+            });
+
             if (!response.ok) throw new Error('Erro ao buscar dados da API.');
 
             const categorias = await response.json();
@@ -66,17 +74,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- LÓGICA DOS MODAIS E FORMULÁRIOS ---
+    // --- LÓGICA DOS MODAIS ---
 
     const abrirModal = (modal) => modal.classList.add('ativo');
     const fecharModais = () => {
         document.querySelectorAll('.modal.ativo').forEach(modal => modal.classList.remove('ativo'));
     };
 
-    // Abrir modal de Adicionar
     btnAdd.onclick = () => abrirModal(modalAdicionar);
 
-    // Abrir modal de Editar
     btnEditar.onclick = () => {
         if (!selectedRow) {
             mostrarMensagem('Nenhuma categoria selecionada.', 'alerta');
@@ -90,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
         abrirModal(modalEditar);
     };
 
-    // Abrir modal de Alterar Status
     btnInativar.onclick = () => {
         if (!selectedRow) {
             mostrarMensagem('Nenhuma categoria selecionada.', 'alerta');
@@ -107,24 +112,19 @@ document.addEventListener('DOMContentLoaded', () => {
         abrirModal(modalAlterarStatus);
     }
 
-    // Configura eventos para fechar modais
     btnsCancelar.forEach(btn => btn.onclick = fecharModais);
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                fecharModais();
-            }
+            if (event.target === modal) fecharModais();
         });
     });
     
-    // Adicionar Categoria (SUBMIT)
+    // --- SUBMITS (POST) ---
+
     formAdicionar.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        
         if (isSubmittingAdicionar) return;
         isSubmittingAdicionar = true;
-        
         
         const submitBtn = formAdicionar.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${API_BASE_URL}/categoria/criar`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headersPadrao, // Atualizado
                 body: JSON.stringify(dados)
             });
 
@@ -155,159 +155,114 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             mostrarMensagem(error.message, 'erro');
         } finally {
-            
             isSubmittingAdicionar = false;
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
         }
     });
 
-    // Editar Categoria (SUBMIT)
     formEditar.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        
         if (isSubmittingEditar) return;
         isSubmittingEditar = true;
-        
         
         const submitBtn = formEditar.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
         const originalText = submitBtn.textContent;
         submitBtn.textContent = 'Processando...';
         
-        const editCategoriaId = document.getElementById('categoriaid').value;
-        const nome= document.getElementById('editar-nome').value;
-        const status= document.getElementById('editar-status').value;
-        const tamanho= document.getElementById('editar-tamanho').value;
-        const embalagem= document.getElementById('editar-embalagem').value;
-
-                    const dados = {
-                nome: nome,
-                editStatus: status,
-                editCategoriaId: editCategoriaId,
-                tamanho: tamanho,
-                embalagem: embalagem,
-            }
+        const dados = {
+            nome: document.getElementById('editar-nome').value,
+            editStatus: document.getElementById('editar-status').value,
+            editCategoriaId: document.getElementById('categoriaid').value,
+            tamanho: document.getElementById('editar-tamanho').value,
+            embalagem: document.getElementById('editar-embalagem').value,
+        }
 
         try {
             const response = await fetch(`${API_BASE_URL}/categoria/editar`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headersPadrao, // Atualizado
                 body: JSON.stringify(dados)
             });
 
-            
-            
             if (!response.ok) {
                  const erroData = await response.json();
                 throw new Error(erroData.mensagem || 'Erro ao editar categoria.');
             }
-            const successoData = await response.json();
-            console.log('Resposta completa do servidor:', successoData); 
-
             fecharModais();
             mostrarMensagem('Categoria atualizada com sucesso!', 'ok');
             carregarCategorias();
         } catch (error) {
             mostrarMensagem(error.message, 'erro');
         } finally {
-            
             isSubmittingEditar = false;
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
         }
     });
 
-    // Alterar Status (SUBMIT)
     formAlterarStatus.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        
         if (isSubmittingAlterarStatus) return;
         isSubmittingAlterarStatus = true;
         
-       
         const submitBtn = formAlterarStatus.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
         const originalText = submitBtn.textContent;
         submitBtn.textContent = 'Processando...';
         
-        const categoriaid = document.getElementById('categoriaid').value;
-        const status = document.getElementById('alterar_status_novo_status').value;
-
         const dados = { 
-            categoriaid: categoriaid,
-            status: status
-            };
-        
-        
+            categoriaid: document.getElementById('categoriaid').value,
+            status: document.getElementById('alterar_status_novo_status').value
+        };
 
         try {
             const response = await fetch(`${API_BASE_URL}/categoria/alt_status`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headersPadrao, // Atualizado
                 body: JSON.stringify(dados)
             });
 
-          if (!response.ok) {
+            if (!response.ok) {
                 const erroData = await response.json();
                 throw new Error(erroData.erro || 'Erro ao alterar status.');
             }
-
             const successoData = await response.json();
-
-
             fecharModais();
             mostrarMensagem(successoData.Mensagem, 'ok');
             carregarCategorias();
         } catch (error) {
              mostrarMensagem(error.message, 'erro');
         } finally {
-            
             isSubmittingAlterarStatus = false;
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
         }
     });
 
-    // --- FUNÇÕES AUXILIARES ---
+    // --- SELEÇÃO E FILTROS ---
 
-    // Selecionar linha da tabela
     corpoTabela.addEventListener('click', (e) => {
         const targetRow = e.target.closest('tr');
         if (!targetRow || !targetRow.dataset.id) return;
-
-        if (selectedRow) {
-            selectedRow.classList.remove('selected');
-        }
+        if (selectedRow) selectedRow.classList.remove('selected');
         selectedRow = targetRow;
         selectedRow.classList.add('selected');
     });
 
-    //Mostrar mensagem 
-    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
-    const containerMensagem = document.createElement('div');
-    containerMensagem.className = `mensagem-popup ${tipo}`;
-    containerMensagem.textContent = mensagem;
-
-    document.body.appendChild(containerMensagem);
-
-    
-    setTimeout(() => {
-        containerMensagem.classList.add('visivel');
-    }, 10);
-
-   
-    setTimeout(() => {
-        containerMensagem.classList.remove('visivel');
+    function mostrarMensagem(mensagem, tipo = 'info') {
+        const containerMensagem = document.createElement('div');
+        containerMensagem.className = `mensagem-popup ${tipo}`;
+        containerMensagem.textContent = mensagem;
+        document.body.appendChild(containerMensagem);
+        setTimeout(() => containerMensagem.classList.add('visivel'), 10);
         setTimeout(() => {
-            containerMensagem.remove();
-        }, 500);
-    }, 3000);
-}
+            containerMensagem.classList.remove('visivel');
+            setTimeout(() => containerMensagem.remove(), 500);
+        }, 3000);
+    }
 
-    // --- FILTRAGEM ---
     const inputsFiltro = [
         document.querySelector('#pesquisaCategoriaID'),
         document.querySelector('#pesquisaNome'),
@@ -317,32 +272,22 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     function filtrarTabela() {
-        const idFiltro = inputsFiltro[0].value.toLowerCase();
-        const nomeFiltro = inputsFiltro[1].value.toLowerCase();
-        const statusFiltro = inputsFiltro[2].value.toLowerCase();
-        const tamanhoFiltro = inputsFiltro[3].value.toLowerCase();
-        const embalagemFiltro = inputsFiltro[4].value.toLowerCase();
+        const filtros = inputsFiltro.map(input => input.value.toLowerCase());
         const noResultsMessage = document.querySelector('#no-results-message');
-        
         let algumaLinhaVisivel = false;
 
         corpoTabela.querySelectorAll('tr').forEach(linha => {
-           
-            if (!linha.cells[0] || !linha.cells[1] || !linha.cells[2] || !linha.cells[3] || !linha.cells[4]) return;
+            if (linha.cells.length < 5) return;
+            
+            const valores = [
+                linha.cells[0].textContent.toLowerCase(),
+                linha.cells[1].textContent.toLowerCase(),
+                linha.cells[2].textContent.toLowerCase(),
+                linha.cells[4].textContent.toLowerCase(),
+                linha.cells[3].textContent.toLowerCase()
+            ];
 
-            const idLinha = linha.cells[0].textContent.toLowerCase();
-            const nomeLinha = linha.cells[1].textContent.toLowerCase();
-            const statusLinha = linha.cells[2].textContent.toLowerCase();
-            const tamanhoLinha = linha.cells[4].textContent.toLowerCase();
-            const embalagemLinha = linha.cells[3].textContent.toLowerCase();
-
-            const corresponde = 
-                idLinha.includes(idFiltro) &&
-                nomeLinha.includes(nomeFiltro) &&
-                statusLinha.includes(statusFiltro) &&
-                tamanhoLinha.includes(tamanhoFiltro) &&
-                embalagemLinha.includes(embalagemFiltro);
-
+            const corresponde = valores.every((val, i) => val.includes(filtros[i]));
             linha.style.display = corresponde ? '' : 'none';
             if (corresponde) algumaLinhaVisivel = true;
         });
@@ -352,6 +297,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     inputsFiltro.forEach(input => input.addEventListener('input', filtrarTabela));
 
-    // --- INICIALIZAÇÃO ---
     carregarCategorias();
 });

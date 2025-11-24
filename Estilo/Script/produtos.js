@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- CONFIGURAÇÕES E SELETORES GLOBAIS ---
-    const API_BASE_URL = 'http://3.12.148.73:8080/api';
+    // --- CONFIGURAÇÕES GLOBAIS ---
+    const API_BASE_URL = 'https://beb44801ba22.ngrok-free.app/api';
+
+    const headersPadrao = {
+        "ngrok-skip-browser-warning": "true",
+        "Content-Type": "application/json"
+    };
 
     // Modais
     const modalAdicionar = document.getElementById('adicionar_produto');
@@ -21,27 +26,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAlterarStatus = document.getElementById("btn-alterar-status");
     const btnsCancelar = document.querySelectorAll('.btn-cancelar');
 
-    // Tabela e Filtros
     const corpoTabela = document.getElementById('corpo-tabela-produtos');
     const inputsFiltro = document.querySelectorAll('.pesquisa input');
     let selectedRow = null;
 
     // --- FUNÇÕES DA API ---
 
-    /**
-     * Busca todos os produtos da API para a tabela.
-     */
     async function carregarProdutos() {
         try {
-            const response = await fetch(`${API_BASE_URL}/produtos`);
+            // Adicionado headers
+            const response = await fetch(`${API_BASE_URL}/produtos`, {
+                method: 'GET',
+                headers: headersPadrao
+            });
+
             if (!response.ok) throw new Error('Erro ao buscar produtos da API.');
 
             const produtos = await response.json();
-            const corpoTabela = document.getElementById('corpo-tabela-produtos'); // Mantido do seu código original
-
-            // Se este script estiver sendo usado na página de RELATÓRIOS, use:
-            // const corpoTabela = document.getElementById('corpo-tabela-relatorios'); 
-
+            
             corpoTabela.innerHTML = '';
             const noResultsMessage = document.getElementById('no-results-message');
             if (noResultsMessage) noResultsMessage.style.display = 'none';
@@ -58,12 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
                 const quantidadeMinima = p.quantidadeMinima || 0;
 
-                // O mapeamento do dataset será corrigido automaticamente para lowercase: produtoId -> productoid
                 Object.keys(p).forEach(key => {
-                    tr.dataset[key.toLowerCase()] = p[key]; // Mapeamento mais seguro para data-attributes
+                    tr.dataset[key.toLowerCase()] = p[key]; 
                 });
 
-                // Usando a chave correta para o dataset (p.produtoId)
                 tr.dataset.produtoId = p.produtoId;
                 tr.dataset.quantidademinima = quantidadeMinima;
                 const alertaEstoque = p.quantidade < quantidadeMinima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
@@ -84,13 +84,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (error) {
             console.error('Falha ao carregar produtos:', error);
-            mostrarMensagem('Falha ao carregar dados dos produtos.', 'erro');
+            mostrarMensagemPopUp('Falha ao carregar dados dos produtos.', 'erro');
         }
     }
 
     async function carregarOpcoesDeCategoria() {
         try {
-            const response = await fetch(`${API_BASE_URL}/categorias`);
+            // Adicionado headers
+            const response = await fetch(`${API_BASE_URL}/categorias`, {
+                method: 'GET',
+                headers: headersPadrao
+            });
+
             if (!response.ok) throw new Error('Erro ao buscar categorias.');
 
             const categorias = await response.json();
@@ -118,20 +123,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- LÓGICA DOS MODAIS E FORMULÁRIOS ---
+    // --- MODAIS ---
 
     const abrirModal = (modal) => modal.style.display = 'flex';
     const fecharModais = () => {
         document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
     };
 
-    //Logica de edição do produto
-    // Abrir Modais
     btnAdd.onclick = () => abrirModal(modalAdicionar);
 
     btnEditar.onclick = () => {
         if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
-
         const data = selectedRow.dataset;
         document.getElementById('editar-produtoId').value = data.produtoId;
         document.getElementById('editar-nome').value = data.nome;
@@ -139,55 +141,41 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('editar-categoria').value = data.categoriaId;
         document.getElementById('editar-preco').value = data.preco;
         document.getElementById('editar-quantidadeMinima').value = data.quantidadeMinima;
-
         abrirModal(modalEditar);
     };
 
     btnMovimentar.onclick = () => {
         if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
-
-
         const statusProduto = selectedRow.dataset.status ? selectedRow.dataset.status.toUpperCase() : '';
-
-        if (statusProduto === 'INATIVO') {
-            return mostrarMensagem('Produto inativo não pode ser movimentado.', 'alerta');
-        }
-
+        if (statusProduto === 'INATIVO') return mostrarMensagem('Produto inativo não pode ser movimentado.', 'alerta');
 
         const inputId = document.getElementById('mover-produtoId');
         if (inputId) {
             inputId.value = selectedRow.dataset.produtoId;
             abrirModal(modalMover);
-        } else {
-            console.error("Elemento 'mover-produtoId' não encontrado no HTML!");
-            mostrarMensagem("Erro interno: formulário incompleto.", 'erro');
         }
     };
 
     btnAlterarStatus.onclick = () => {
         if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
-
         const data = selectedRow.dataset;
         const novoStatus = data.status.toUpperCase() === 'ATIVO' ? 'Inativo' : 'Ativo';
-
         document.getElementById('alterar_Status_selecionado').value = data.produtoId;
         document.getElementById('nomeProduto').textContent = data.nome;
         document.getElementById('statusNovo').textContent = novoStatus;
-
         abrirModal(modalAlterarStatus);
     };
 
-    // Fechar Modais
     btnsCancelar.forEach(btn => btn.onclick = (e) => {
         e.preventDefault();
         fecharModais();
     });
 
-    // Lógica de Submissão de Formulários
+    // --- SUBMISSÃO GENÉRICA ---
+
     async function handleFormSubmit(form, url, successMessage, getDados) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const submitter = e.submitter;
             if (submitter && submitter.classList.contains('btn-cancelar')) {
                 fecharModais();
@@ -197,16 +185,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const dados = getDados(form);
 
             try {
+                // Adicionado headers
                 const response = await fetch(`${API_BASE_URL}${url}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headersPadrao,
                     body: JSON.stringify(dados)
                 });
 
                 const result = await response.json();
-                if (!response.ok) {
-                    throw new Error(result.Erro || 'Ocorreu um erro.');
-                }
+                if (!response.ok) throw new Error(result.Erro || 'Ocorreu um erro.');
 
                 fecharModais();
                 mostrarMensagem(result.Mensagem || successMessage, 'ok');
@@ -219,61 +206,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- FUNÇÕES AUXILIARES E EVENTOS ---
+    // --- AUXILIARES ---
 
-    // Selecionar linha da tabela
     corpoTabela.addEventListener('click', (e) => {
         const targetRow = e.target.closest('tr');
         if (!targetRow || !targetRow.dataset.id) return;
-
         if (selectedRow) selectedRow.classList.remove('selected');
         selectedRow = targetRow;
         selectedRow.classList.add('selected');
     });
 
-    // Função para mostrar mensagens de feedback
     function mostrarMensagem(mensagem, tipo = 'alerta') {
         const container = document.getElementById('mensagem_resultado');
         const conteudo = document.getElementById('mensagem_resultado_conteudo');
-
-        let tipoClasse = '';
-        switch (tipo) {
-            case 'ok':
-                tipoClasse = 'resultado_ok';
-                break;
-            case 'erro':
-                tipoClasse = 'resultado_erro';
-                break;
-            case 'alerta':
-                tipoClasse = 'campos_Npreenchidos';
-                break;
-        }
+        let tipoClasse = tipo === 'ok' ? 'resultado_ok' : (tipo === 'erro' ? 'resultado_erro' : 'campos_Npreenchidos');
 
         conteudo.innerHTML = `<div class="mensagem" id="${tipoClasse}"><p>${mensagem}</p></div>`;
         container.style.display = 'flex';
-
+        setTimeout(() => container.style.display = 'none', 3000);
+    }
+    
+    function mostrarMensagemPopUp(mensagem, tipo = 'info') {
+        const containerMensagem = document.createElement('div');
+        containerMensagem.className = `mensagem-popup ${tipo}`;
+        containerMensagem.textContent = mensagem;
+        document.body.appendChild(containerMensagem);
+        setTimeout(() => containerMensagem.classList.add('visivel'), 10);
         setTimeout(() => {
-            container.style.display = 'none';
+            containerMensagem.classList.remove('visivel');
+            setTimeout(() => containerMensagem.remove(), 500);
         }, 3000);
     }
 
-    // Lógica de filtragem
     function filtrarTabela() {
         const filtros = Array.from(inputsFiltro).map(input => input.value.toLowerCase());
         let algumaLinhaVisivel = false;
 
         corpoTabela.querySelectorAll('tr').forEach(linha => {
-            const id = linha.cells[0].textContent.toLowerCase();
-            const nome = linha.cells[1].textContent.toLowerCase();
-            const categoria = linha.cells[2].textContent.toLowerCase();
-            const status = linha.cells[3].textContent.toLowerCase();
-
-            const corresponde =
-                id.includes(filtros[0]) &&
-                nome.includes(filtros[1]) &&
-                categoria.includes(filtros[2]) &&
-                status.includes(filtros[3]);
-
+            const corresponde = Array.from(linha.cells).slice(0, 4).every((cell, i) => 
+                cell.textContent.toLowerCase().includes(filtros[i])
+            );
             linha.style.display = corresponde ? '' : 'none';
             if (corresponde) algumaLinhaVisivel = true;
         });
@@ -284,22 +256,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     inputsFiltro.forEach(input => input.addEventListener('input', filtrarTabela));
 
-    // O campo 'quantidadeMinima' agora corresponde no HTML e na API!
+    // Configuração dos Forms
     handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucesso!', (form) => ({
         nome: form.nome.value,
-
-        // Converte status para minúsculo, conforme o objeto de exemplo da API
         status: form.status.value.toLowerCase(),
-
-        // Mapeamento e Conversão para Número:
-        // O valor do SELECT (categoria) DEVE ser o ID (ex: "18"). 
-        // Se for uma string vazia (""), resultará em NaN (que pode virar null).
         categoriaId: parseInt(form.categoria.value, 10),
-
-        // Conversão para número decimal
         preco: parseFloat(form.preco.value),
-
-        // O nome do campo agora é o mesmo da API! Conversão para inteiro
         quantidadeMinima: parseInt(form.quantidadeMinima.value, 10)
     }));
 
@@ -310,8 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         categoriaId: form['editar-categoria'].value,
         preco: form['editar-preco'].value,
         quantidadeMinima: form['editar-quantidadeMinima'].value
-    })
-    );
+    }));
 
     handleFormSubmit(formMover, '/produtos/movimentar-estoque', 'Estoque atualizado com sucesso!', (form) => ({
         produtoId: form['mover-produtoId'].value,
@@ -319,54 +280,10 @@ document.addEventListener('DOMContentLoaded', () => {
         quantidade: form['quantidade-mover'].value
     }));
 
-    handleFormSubmit(formAlterarStatus, '/produto/alterar_status', 'Status do produto alterado com sucesso!', (form) => ({
+    handleFormSubmit(formAlterarStatus, '/produto/alterar_status', 'Status alterado com sucesso!', (form) => ({
         produtoId: form['alterar_Status_selecionado'].value
     }));
 
-    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
-        const containerMensagem = document.createElement('div');
-        containerMensagem.className = `mensagem-popup ${tipo}`;
-        containerMensagem.textContent = mensagem;
-
-        document.body.appendChild(containerMensagem);
-
-
-        setTimeout(() => {
-            containerMensagem.classList.add('visivel');
-        }, 10);
-
-
-        setTimeout(() => {
-            containerMensagem.classList.remove('visivel');
-            setTimeout(() => {
-                containerMensagem.remove();
-            }, 500);
-        }, 3000);
-    }
-
     carregarOpcoesDeCategoria();
     carregarProdutos();
-
-
-    //Mostrar mensagem 
-    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
-        const containerMensagem = document.createElement('div');
-        containerMensagem.className = `mensagem-popup ${tipo}`;
-        containerMensagem.textContent = mensagem;
-
-        document.body.appendChild(containerMensagem);
-
-
-        setTimeout(() => {
-            containerMensagem.classList.add('visivel');
-        }, 10);
-
-
-        setTimeout(() => {
-            containerMensagem.classList.remove('visivel');
-            setTimeout(() => {
-                containerMensagem.remove();
-            }, 500);
-        }, 3000);
-    }
 });

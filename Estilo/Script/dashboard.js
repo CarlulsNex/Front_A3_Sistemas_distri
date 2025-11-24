@@ -15,10 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const dados = await response.json();
             
-        const cardTotal = document.getElementById('total-produtos'); // Provavelmente é este o ID no HTML
+        const cardTotal = document.getElementById('total-produtos');
         if (cardTotal) cardTotal.textContent = dados.totalProdutos;
 
-        const cardEstoque = document.getElementById('estoque-baixo'); // Provavelmente é este o ID no HTML
+        const cardEstoque = document.getElementById('estoque-baixo'); 
         if (cardEstoque) cardEstoque.textContent = dados.produtosEstoqueBaixo;
         
         } catch (error) {

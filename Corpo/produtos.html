@@ -312,34 +312,35 @@
     </form>
   </div>
 </div>
+<div id="alterar_Status" class="modal">
+  <div class="modal-conteudo" id="modal-conteudo_alterar_Status">
+    <h2>Alteração de Status</h2>
+    <form id="Form-alterar_Status">
+      <input
+        type="hidden"
+        id="alterar_Status_selecionado"
+        name="alterar_Status_selecionado"
+      />
+      
+      <input type="hidden" id="input_novo_status" name="novo-status" />
 
-    <div id="alterar_Status" class="modal">
-      <div class="modal-conteudo" id="modal-conteudo_alterar_Status">
-        <h2>Alteração de Status</h2>
-        <form id="Form-alterar_Status">
-          <input
-            type="hidden"
-            id="alterar_Status_selecionado"
-            name="alterar_Status_selecionado"
-          />
-          <div class="infos">
-            <p>
-              Deseja tornar o produto <b id="nomeProduto"></b>
-              <b id="statusNovo"></b>?
-            </p>
-          </div>
-          <div class="botoes-decisao-box">
-            <button type="button" class="btn-decisao btn-cancelar">
-              Cancelar
-            </button>
-            <button type="submit" class="btn-decisao btn-confirmar">
-              Confirmar
-            </button>
-          </div>
-        </form>
+      <div class="infos">
+        <p>
+          Deseja tornar o produto <b id="nomeProduto"></b>
+          <b id="statusNovo"></b>?
+        </p>
       </div>
-    </div>
-
+      <div class="botoes-decisao-box">
+        <button type="button" class="btn-decisao btn-cancelar">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-decisao btn-confirmar">
+          Confirmar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
     <div id="mensagem_resultado" class="modal">
         <div id="mensagem_resultado_conteudo">
             <div class="mensagem" id="resultado_ok"><p></p></div>

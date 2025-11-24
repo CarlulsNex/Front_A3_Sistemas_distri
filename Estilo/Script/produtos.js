@@ -37,10 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Erro ao buscar produtos da API.');
 
             const produtos = await response.json();
-            const corpoTabela = document.getElementById('corpo-tabela-produtos'); // Mantido do seu código original
+            const corpoTabela = document.getElementById('corpo-tabela-produtos'); 
 
-            // Se este script estiver sendo usado na página de RELATÓRIOS, use:
-            // const corpoTabela = document.getElementById('corpo-tabela-relatorios'); 
 
             corpoTabela.innerHTML = '';
             const noResultsMessage = document.getElementById('no-results-message');
@@ -58,12 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
                 const quantidadeMinima = p.quantidadeMinima || 0;
 
-                // O mapeamento do dataset será corrigido automaticamente para lowercase: produtoId -> productoid
+           
                 Object.keys(p).forEach(key => {
-                    tr.dataset[key.toLowerCase()] = p[key]; // Mapeamento mais seguro para data-attributes
+                    tr.dataset[key.toLowerCase()] = p[key]; 
                 });
 
-                // Usando a chave correta para o dataset (p.produtoId)
                 tr.dataset.produtoId = p.produtoId;
                 tr.dataset.quantidademinima = quantidadeMinima;
                 const alertaEstoque = p.quantidade < quantidadeMinima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
@@ -173,6 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('alterar_Status_selecionado').value = data.produtoId;
         document.getElementById('nomeProduto').textContent = data.nome;
         document.getElementById('statusNovo').textContent = novoStatus;
+        const inputHidden = document.getElementById('input_novo_status');
+        if(inputHidden) inputHidden.value = novoStatus; 
+
+        
 
         abrirModal(modalAlterarStatus);
     };
@@ -284,22 +285,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     inputsFiltro.forEach(input => input.addEventListener('input', filtrarTabela));
 
-    // O campo 'quantidadeMinima' agora corresponde no HTML e na API!
     handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucesso!', (form) => ({
         nome: form.nome.value,
 
-        // Converte status para minúsculo, conforme o objeto de exemplo da API
+        
         status: form.status.value.toLowerCase(),
 
-        // Mapeamento e Conversão para Número:
-        // O valor do SELECT (categoria) DEVE ser o ID (ex: "18"). 
-        // Se for uma string vazia (""), resultará em NaN (que pode virar null).
+        
         categoriaId: parseInt(form.categoria.value, 10),
-
-        // Conversão para número decimal
         preco: parseFloat(form.preco.value),
-
-        // O nome do campo agora é o mesmo da API! Conversão para inteiro
         quantidadeMinima: parseInt(form.quantidadeMinima.value, 10)
     }));
 
@@ -319,8 +313,10 @@ document.addEventListener('DOMContentLoaded', () => {
         quantidade: form['quantidade-mover'].value
     }));
 
-    handleFormSubmit(formAlterarStatus, '/produto/alterar_status', 'Status do produto alterado com sucesso!', (form) => ({
-        produtoId: form['alterar_Status_selecionado'].value
+
+        handleFormSubmit(formAlterarStatus, '/produtos/status', 'Status do produto alterado com sucesso!', (form) => ({
+        produtoId: form['alterar_Status_selecionado'].value,
+        status: form['novo-status'].value 
     }));
 
     function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
@@ -346,27 +342,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     carregarOpcoesDeCategoria();
     carregarProdutos();
-
-
-    //Mostrar mensagem 
-    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
-        const containerMensagem = document.createElement('div');
-        containerMensagem.className = `mensagem-popup ${tipo}`;
-        containerMensagem.textContent = mensagem;
-
-        document.body.appendChild(containerMensagem);
-
-
-        setTimeout(() => {
-            containerMensagem.classList.add('visivel');
-        }, 10);
-
-
-        setTimeout(() => {
-            containerMensagem.classList.remove('visivel');
-            setTimeout(() => {
-                containerMensagem.remove();
-            }, 500);
-        }, 3000);
-    }
 });

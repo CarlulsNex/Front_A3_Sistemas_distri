@@ -53,14 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             produtos.forEach(p => {
                 const tr = document.createElement('tr');
-
-                // 💡 CORREÇÃO 1: Usando p.produtoId (CamelCase)
                 tr.dataset.id = p.produtoId;
-
-                // Se a API tiver o objeto categoria, pega o nome, se não, usa 'N/A'.
+                
                 const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
-
-                // 💡 CORREÇÃO 2: Usando p.quantidadeMinima (CamelCase)
                 const quantidadeMinima = p.quantidadeMinima || 0;
 
                 // O mapeamento do dataset será corrigido automaticamente para lowercase: produtoId -> productoid
@@ -71,8 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Usando a chave correta para o dataset (p.produtoId)
                 tr.dataset.produtoId = p.produtoId;
                 tr.dataset.quantidademinima = quantidadeMinima;
-
-                // 💡 CORREÇÃO 3: Usando p.quantidadeMinima e p.produtoId no alerta
                 const alertaEstoque = p.quantidade < quantidadeMinima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
 
                 tr.innerHTML = `
@@ -132,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
     };
 
+    //Logica de edição do produto
     // Abrir Modais
     btnAdd.onclick = () => abrirModal(modalAdicionar);
 
@@ -139,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
 
         const data = selectedRow.dataset;
-        //document.getElementById('editar-produtoId').value = data.produtoId;
+        document.getElementById('editar-produtoId').value = data.produtoId;
         document.getElementById('editar-nome').value = data.nome;
         document.getElementById('editar-status').value = data.status;
         document.getElementById('editar-categoria').value = data.categoriaId;
@@ -158,8 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (statusProduto === 'INATIVO') {
             return mostrarMensagem('Produto inativo não pode ser movimentado.', 'alerta');
         }
-        
-        
+
+
         const inputId = document.getElementById('mover-produtoId');
         if (inputId) {
             inputId.value = selectedRow.dataset.produtoId;
@@ -191,39 +185,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Lógica de Submissão de Formulários
     async function handleFormSubmit(form, url, successMessage, getDados) {
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        const submitter = e.submitter;
-        if (submitter && submitter.classList.contains('btn-cancelar')) {
-            fecharModais();
-            return;
-        }
-
-        const dados = getDados(form);
-
-        try {
-                const response = await fetch(`${API_BASE_URL}${url}`, {
-                method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dados)
-            });
-
-                const result = await response.json();
-            if (!response.ok) {
-                    throw new Error(result.Erro || 'Ocorreu um erro.');
+            const submitter = e.submitter;
+            if (submitter && submitter.classList.contains('btn-cancelar')) {
+                fecharModais();
+                return;
             }
 
-            fecharModais();
+            const dados = getDados(form);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${url}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.Erro || 'Ocorreu um erro.');
+                }
+
+                fecharModais();
                 mostrarMensagem(result.Mensagem || successMessage, 'ok');
                 carregarProdutos();
                 form.reset();
 
-        } catch (error) {
+            } catch (error) {
                 mostrarMensagem(error.message, 'erro');
-        }
-    });
-}
+            }
+        });
+    }
 
     // --- FUNÇÕES AUXILIARES E EVENTOS ---
 
@@ -290,34 +284,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     inputsFiltro.forEach(input => input.addEventListener('input', filtrarTabela));
 
-   // O campo 'quantidadeMinima' agora corresponde no HTML e na API!
-handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucesso!', (form) => ({
-    nome: form.nome.value,
-    
-    // Converte status para minúsculo, conforme o objeto de exemplo da API
-    status: form.status.value.toLowerCase(), 
+    // O campo 'quantidadeMinima' agora corresponde no HTML e na API!
+    handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucesso!', (form) => ({
+        nome: form.nome.value,
 
-    // Mapeamento e Conversão para Número:
-    // O valor do SELECT (categoria) DEVE ser o ID (ex: "18"). 
-    // Se for uma string vazia (""), resultará em NaN (que pode virar null).
-    categoriaId: parseInt(form.categoria.value, 10), 
+        // Converte status para minúsculo, conforme o objeto de exemplo da API
+        status: form.status.value.toLowerCase(),
 
-    // Conversão para número decimal
-    preco: parseFloat(form.preco.value), 
-    
-    // O nome do campo agora é o mesmo da API! Conversão para inteiro
-    quantidadeMinima: parseInt(form.quantidadeMinima.value, 10)
-}));
+        // Mapeamento e Conversão para Número:
+        // O valor do SELECT (categoria) DEVE ser o ID (ex: "18"). 
+        // Se for uma string vazia (""), resultará em NaN (que pode virar null).
+        categoriaId: parseInt(form.categoria.value, 10),
+
+        // Conversão para número decimal
+        preco: parseFloat(form.preco.value),
+
+        // O nome do campo agora é o mesmo da API! Conversão para inteiro
+        quantidadeMinima: parseInt(form.quantidadeMinima.value, 10)
+    }));
 
     handleFormSubmit(formEditar, '/produto/editar', 'Produto editado com sucesso!', (form) => ({
-        // produtoId: form['editar-produtoId'].value,
+        produtoId: form['editar-produtoId'].value,
         nome: form['editar-nome'].value,
         status: form['editar-status'].value,
-        categoria: form['editar-categoria'].value,
+        categoriaId: form['editar-categoria'].value,
         preco: form['editar-preco'].value,
         quantidadeMinima: form['editar-quantidadeMinima'].value
     })
-);
+    );
 
     handleFormSubmit(formMover, '/produtos/movimentar-estoque', 'Estoque atualizado com sucesso!', (form) => ({
         produtoId: form['mover-produtoId'].value,
@@ -330,49 +324,49 @@ handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucess
     }));
 
     function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
-    const containerMensagem = document.createElement('div');
-    containerMensagem.className = `mensagem-popup ${tipo}`;
-    containerMensagem.textContent = mensagem;
+        const containerMensagem = document.createElement('div');
+        containerMensagem.className = `mensagem-popup ${tipo}`;
+        containerMensagem.textContent = mensagem;
 
-    document.body.appendChild(containerMensagem);
+        document.body.appendChild(containerMensagem);
 
-    
-    setTimeout(() => {
-        containerMensagem.classList.add('visivel');
-    }, 10);
 
-   
-    setTimeout(() => {
-        containerMensagem.classList.remove('visivel');
         setTimeout(() => {
-            containerMensagem.remove();
-        }, 500);
-    }, 3000);
-}
+            containerMensagem.classList.add('visivel');
+        }, 10);
+
+
+        setTimeout(() => {
+            containerMensagem.classList.remove('visivel');
+            setTimeout(() => {
+                containerMensagem.remove();
+            }, 500);
+        }, 3000);
+    }
 
     carregarOpcoesDeCategoria();
     carregarProdutos();
 
 
-        //Mostrar mensagem 
+    //Mostrar mensagem 
     function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
-    const containerMensagem = document.createElement('div');
-    containerMensagem.className = `mensagem-popup ${tipo}`;
-    containerMensagem.textContent = mensagem;
+        const containerMensagem = document.createElement('div');
+        containerMensagem.className = `mensagem-popup ${tipo}`;
+        containerMensagem.textContent = mensagem;
 
-    document.body.appendChild(containerMensagem);
+        document.body.appendChild(containerMensagem);
 
-    
-    setTimeout(() => {
-        containerMensagem.classList.add('visivel');
-    }, 10);
 
-   
-    setTimeout(() => {
-        containerMensagem.classList.remove('visivel');
         setTimeout(() => {
-            containerMensagem.remove();
-        }, 500);
-    }, 3000);
-}
+            containerMensagem.classList.add('visivel');
+        }, 10);
+
+
+        setTimeout(() => {
+            containerMensagem.classList.remove('visivel');
+            setTimeout(() => {
+                containerMensagem.remove();
+            }, 500);
+        }, 3000);
+    }
 });

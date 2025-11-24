@@ -188,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 editCategoriaId: editCategoriaId,
                 tamanho: tamanho,
                 embalagem: embalagem,
-                
             }
 
         try {

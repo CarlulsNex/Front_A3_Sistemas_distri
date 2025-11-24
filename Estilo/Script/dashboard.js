@@ -1,29 +1,30 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // Define as URLs base da sua API.
-    const API_BASE_URL = 'http://127.0.0.1:5000/api';
+    const API_BASE_URL = 'http://127.0.0.1:8080/api';
 
 
     async function carregarDadosDosCards() {
         try {
             
-            const response = await fetch(`${API_BASE_URL}/relatorio/resumo`);
+            const response = await fetch(`${API_BASE_URL}/resumo`);
 
             if (!response.ok) {
                 throw new Error('Falha ao buscar dados dos cards');
             }
 
             const dados = await response.json();
+            
+        const cardTotal = document.getElementById('total-produtos'); // Provavelmente é este o ID no HTML
+        if (cardTotal) cardTotal.textContent = dados.totalProdutos;
 
-            document.getElementById('total-produtos').textContent = dados.total_produtos;
-            document.getElementById('estoque-baixo').textContent = dados.produtos_estoque_baixo;
-            document.getElementById('total-categorias').textContent = dados.categorias_ativas;
-
+        const cardEstoque = document.getElementById('estoque-baixo'); // Provavelmente é este o ID no HTML
+        if (cardEstoque) cardEstoque.textContent = dados.produtosEstoqueBaixo;
+        
         } catch (error) {
             console.error("Erro ao carregar cards:", error);
-            document.getElementById('total-produtos').textContent = 'Erro';
-            document.getElementById('estoque-baixo').textContent = 'Erro';
-            document.getElementById('total-categorias').textContent = 'Erro';
+            document.getElementById('totalProdutos').textContent = 'Erro';
+            document.getElementById('produtosEstoqueBaixo').textContent = 'Erro';
         }
     }
 
@@ -31,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function carregarMovimentacoesRecentes() {
         try {
             // Retorna a lista (ARRAY) de todas as movimentações.
-            const response = await fetch(`${API_BASE_URL}/relatorios`);
+            const response = await fetch(`${API_BASE_URL}/resumo/movimentacoes`);
             
             if (!response.ok) {
                 throw new Error('Falha ao buscar movimentações recentes');
@@ -46,23 +47,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Ordena as movimentações da mais recente para a mais antiga
-            movimentacoes.sort((a, b) => new Date(b.data_entrada || b.data_saida) - new Date(a.data_entrada || a.data_saida));
+       
+            const recentes = movimentacoes.slice(0, 10);
 
-            // Pega apenas as 5 movimentações mais recentes
-            const recentes = movimentacoes.slice(0, 5);
-
-            // Cria uma linha na tabela para cada movimentação
             recentes.forEach(mov => {
                 const linha = document.createElement('tr');
-                
-                // O ideal é a API retornar um campo 'tipo'. Por enquanto, podemos deduzir.
-                const tipo = mov.entradaid ? 'Entrada' : 'Saída'; 
-                const dataFormatada = new Date(mov.data_entrada || mov.data_saida).toLocaleDateString('pt-BR');
+                const dataObj = new Date(mov.data);
+                const dataFormatada = isNaN(dataObj) ? 'Data Inválida' : dataObj.toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                let tipoTexto = mov.tipo=== 'ENTRADA' ? 'Entrada' : 'Saída';
 
                 linha.innerHTML = `
-                    <td>${tipo}</td>
-                    <td>${mov.nome_produto}</td>
+                    <td>${tipoTexto}</td>
+                    <td>${mov.nomeProduto}</td>
                     <td>${mov.quantidade}</td>
                     <td>${dataFormatada}</td>
                 `;

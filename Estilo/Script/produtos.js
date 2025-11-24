@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- CONFIGURAÇÕES E SELETORES GLOBAIS ---
-    const API_BASE_URL = 'http://127.0.0.1:5000/api';
+    const API_BASE_URL = 'http://127.0.0.1:8080/api';
 
     // Modais
     const modalAdicionar = document.getElementById('adicionar_produto');
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNÇÕES DA API ---
 
     /**
-     * Busca todos os produtos da API e popula a tabela.
+     * Busca todos os produtos da API para a tabela.
      */
     async function carregarProdutos() {
         try {
@@ -37,10 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Erro ao buscar produtos da API.');
 
             const produtos = await response.json();
+            const corpoTabela = document.getElementById('corpo-tabela-produtos'); // Mantido do seu código original
+
+            // Se este script estiver sendo usado na página de RELATÓRIOS, use:
+            // const corpoTabela = document.getElementById('corpo-tabela-relatorios'); 
+
             corpoTabela.innerHTML = '';
             const noResultsMessage = document.getElementById('no-results-message');
             if (noResultsMessage) noResultsMessage.style.display = 'none';
-
 
             if (produtos.length === 0) {
                 if (noResultsMessage) noResultsMessage.style.display = 'block';
@@ -49,26 +53,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
             produtos.forEach(p => {
                 const tr = document.createElement('tr');
-                tr.dataset.id = p.produtoid;
-                // Adiciona todos os dados como data attributes para fácil acesso
+                tr.dataset.id = p.produtoId;
+                
+                const nomeCategoria = p.categoria && p.categoria.nome ? p.categoria.nome : 'N/A';
+                const quantidadeMinima = p.quantidadeMinima || 0;
+
+                // O mapeamento do dataset será corrigido automaticamente para lowercase: produtoId -> productoid
                 Object.keys(p).forEach(key => {
-                    tr.dataset[key] = p[key];
+                    tr.dataset[key.toLowerCase()] = p[key]; // Mapeamento mais seguro para data-attributes
                 });
 
-                const alertaEstoque = p.quantidade < p.quantidade_minima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
+                // Usando a chave correta para o dataset (p.produtoId)
+                tr.dataset.produtoId = p.produtoId;
+                tr.dataset.quantidademinima = quantidadeMinima;
+                const alertaEstoque = p.quantidade < quantidadeMinima ? `<p id="alerta_hidden" style="display: block; color: red;">Estoque baixo!</p>` : '';
 
                 tr.innerHTML = `
-                    <td><p>${p.produtoid}</p></td>
-                    <td>
-                        <p>${p.nome}</p>
-                        <p><i>Estoque disponível:</i> <b><i>${p.quantidade}</i></b></p>
-                        ${alertaEstoque}
-                    </td>
-                    <td><p>${p.nome_categoria || 'N/A'}</p></td>
-                    <td><p>${p.status}</p></td>
-                    <td><p>${p.preco}</P></td>
-                    <td class="hidden-td">${p.quantidade_minima}</td>
-                `;
+                <td><p>${p.produtoId || 'N/A'}</p></td>
+                <td>
+                    <p>${p.nome || 'Produto Sem Nome'}</p>
+                    <p><i>Estoque disponível:</i> <b><i>${p.quantidade || 0}</i></b></p>
+                    ${alertaEstoque}
+                </td>
+                <td><p>${nomeCategoria}</p></td>
+                <td><p>${p.status || 'N/A'}</p></td>
+                <td><p>${p.preco || '0.00'}</P></td>
+                <td class="hidden-td">${quantidadeMinima}</td>
+            `;
                 corpoTabela.appendChild(tr);
             });
         } catch (error) {
@@ -86,9 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectsDeCategoria = document.querySelectorAll('select[name="categoria"], select[name="editar-categoria"]');
 
             selectsDeCategoria.forEach(select => {
-                select.innerHTML = ''; // Limpa opções antigas
-
-                // Adiciona uma opção padrão/placeholder
+                select.innerHTML = '';
                 const placeholder = new Option('Selecione uma categoria...', '');
                 placeholder.disabled = true;
                 placeholder.selected = true;
@@ -96,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 categorias.forEach(cat => {
                     if (cat.status.toUpperCase() === 'ATIVO') {
-                        const option = new Option(cat.nome, cat.nome); // O valor enviado será o nome da categoria
+                        const option = new Option(cat.nome, cat.categoriaid);
                         select.add(option);
                     }
                 });
@@ -116,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
     };
 
+    //Logica de edição do produto
     // Abrir Modais
     btnAdd.onclick = () => abrirModal(modalAdicionar);
 
@@ -123,23 +133,35 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
 
         const data = selectedRow.dataset;
-        document.getElementById('editar-produtoid').value = data.produtoid;
+        document.getElementById('editar-produtoId').value = data.produtoId;
         document.getElementById('editar-nome').value = data.nome;
         document.getElementById('editar-status').value = data.status;
-        document.getElementById('editar-categoria').value = data.categoria_id;
+        document.getElementById('editar-categoria').value = data.categoriaId;
         document.getElementById('editar-preco').value = data.preco;
-        document.getElementById('editar-qnt_min').value = data.quantidade_minima;
+        document.getElementById('editar-quantidadeMinima').value = data.quantidadeMinima;
 
         abrirModal(modalEditar);
     };
 
     btnMovimentar.onclick = () => {
         if (!selectedRow) return mostrarMensagem('Nenhum produto selecionado.', 'alerta');
-        if (selectedRow.dataset.status.toUpperCase() === 'INATIVO') {
+
+
+        const statusProduto = selectedRow.dataset.status ? selectedRow.dataset.status.toUpperCase() : '';
+
+        if (statusProduto === 'INATIVO') {
             return mostrarMensagem('Produto inativo não pode ser movimentado.', 'alerta');
         }
-        document.getElementById('mover-produtoid').value = selectedRow.dataset.produtoid;
-        abrirModal(modalMover);
+
+
+        const inputId = document.getElementById('mover-produtoId');
+        if (inputId) {
+            inputId.value = selectedRow.dataset.produtoId;
+            abrirModal(modalMover);
+        } else {
+            console.error("Elemento 'mover-produtoId' não encontrado no HTML!");
+            mostrarMensagem("Erro interno: formulário incompleto.", 'erro');
+        }
     };
 
     btnAlterarStatus.onclick = () => {
@@ -148,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = selectedRow.dataset;
         const novoStatus = data.status.toUpperCase() === 'ATIVO' ? 'Inativo' : 'Ativo';
 
-        document.getElementById('alterar_Status_selecionado').value = data.produtoid;
+        document.getElementById('alterar_Status_selecionado').value = data.produtoId;
         document.getElementById('nomeProduto').textContent = data.nome;
         document.getElementById('statusNovo').textContent = novoStatus;
 
@@ -165,13 +187,13 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleFormSubmit(form, url, successMessage, getDados) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const submitter = e.submitter;
             if (submitter && submitter.classList.contains('btn-cancelar')) {
                 fecharModais();
                 return;
             }
-            
+
             const dados = getDados(form);
 
             try {
@@ -185,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) {
                     throw new Error(result.Erro || 'Ocorreu um erro.');
                 }
-                
+
                 fecharModais();
                 mostrarMensagem(result.Mensagem || successMessage, 'ok');
                 carregarProdutos();
@@ -213,9 +235,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function mostrarMensagem(mensagem, tipo = 'alerta') {
         const container = document.getElementById('mensagem_resultado');
         const conteudo = document.getElementById('mensagem_resultado_conteudo');
-        
+
         let tipoClasse = '';
-        switch(tipo) {
+        switch (tipo) {
             case 'ok':
                 tipoClasse = 'resultado_ok';
                 break;
@@ -262,34 +284,89 @@ document.addEventListener('DOMContentLoaded', () => {
 
     inputsFiltro.forEach(input => input.addEventListener('input', filtrarTabela));
 
-    // --- INICIALIZAÇÃO ---
+    // O campo 'quantidadeMinima' agora corresponde no HTML e na API!
     handleFormSubmit(formAdicionar, '/produto/criar', 'Produto adicionado com sucesso!', (form) => ({
         nome: form.nome.value,
-        status: form.status.value,
-        categoria: form.categoria.value,
-        preco: form.preco.value,
-        qnt_min: form.qnt_min.value
+
+        // Converte status para minúsculo, conforme o objeto de exemplo da API
+        status: form.status.value.toLowerCase(),
+
+        // Mapeamento e Conversão para Número:
+        // O valor do SELECT (categoria) DEVE ser o ID (ex: "18"). 
+        // Se for uma string vazia (""), resultará em NaN (que pode virar null).
+        categoriaId: parseInt(form.categoria.value, 10),
+
+        // Conversão para número decimal
+        preco: parseFloat(form.preco.value),
+
+        // O nome do campo agora é o mesmo da API! Conversão para inteiro
+        quantidadeMinima: parseInt(form.quantidadeMinima.value, 10)
     }));
 
     handleFormSubmit(formEditar, '/produto/editar', 'Produto editado com sucesso!', (form) => ({
-        produtoid: form['editar-produtoid'].value,
+        produtoId: form['editar-produtoId'].value,
         nome: form['editar-nome'].value,
         status: form['editar-status'].value,
-        categoria: form['editar-categoria'].value,
+        categoriaId: form['editar-categoria'].value,
         preco: form['editar-preco'].value,
-        qnt_min: form['editar-qnt_min'].value
+        quantidadeMinima: form['editar-quantidadeMinima'].value
+    })
+    );
+
+    handleFormSubmit(formMover, '/produtos/movimentar-estoque', 'Estoque atualizado com sucesso!', (form) => ({
+        produtoId: form['mover-produtoId'].value,
+        tipo: form['tipo-mover'].value,
+        quantidade: form['quantidade-mover'].value
     }));
 
-    handleFormSubmit(formMover, '/produto/mover', 'Estoque atualizado com sucesso!', (form) => ({
-       produtoid: form['mover-produtoid'].value,
-       tipo: form['tipo-mover'].value,
-       quantidade: form['quantidade-mover'].value
-    }));
-    
     handleFormSubmit(formAlterarStatus, '/produto/alterar_status', 'Status do produto alterado com sucesso!', (form) => ({
-        produtoid: form['alterar_Status_selecionado'].value
+        produtoId: form['alterar_Status_selecionado'].value
     }));
+
+    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
+        const containerMensagem = document.createElement('div');
+        containerMensagem.className = `mensagem-popup ${tipo}`;
+        containerMensagem.textContent = mensagem;
+
+        document.body.appendChild(containerMensagem);
+
+
+        setTimeout(() => {
+            containerMensagem.classList.add('visivel');
+        }, 10);
+
+
+        setTimeout(() => {
+            containerMensagem.classList.remove('visivel');
+            setTimeout(() => {
+                containerMensagem.remove();
+            }, 500);
+        }, 3000);
+    }
 
     carregarOpcoesDeCategoria();
     carregarProdutos();
+
+
+    //Mostrar mensagem 
+    function mostrarMensagem(mensagem, tipo = 'info') { // tipo pode ser 'ok', 'erro', 'alerta'
+        const containerMensagem = document.createElement('div');
+        containerMensagem.className = `mensagem-popup ${tipo}`;
+        containerMensagem.textContent = mensagem;
+
+        document.body.appendChild(containerMensagem);
+
+
+        setTimeout(() => {
+            containerMensagem.classList.add('visivel');
+        }, 10);
+
+
+        setTimeout(() => {
+            containerMensagem.classList.remove('visivel');
+            setTimeout(() => {
+                containerMensagem.remove();
+            }, 500);
+        }, 3000);
+    }
 });
